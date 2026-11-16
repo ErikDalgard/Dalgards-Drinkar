@@ -282,6 +282,51 @@
   gap: 1.1rem;
 }
 
+.skeleton-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.skeleton-media,
+.skeleton-line {
+  background: linear-gradient(100deg, var(--surface-hover) 25%, var(--border) 45%, var(--surface-hover) 65%);
+  background-size: 250% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-media {
+  aspect-ratio: 16 / 9;
+}
+
+.skeleton-body {
+  display: grid;
+  gap: .7rem;
+  padding: 1rem;
+}
+
+.skeleton-line {
+  display: block;
+  height: .8rem;
+  border-radius: 999px;
+}
+
+.skeleton-title { width: 72%; height: 1.2rem; }
+.skeleton-meta { width: 42%; }
+.skeleton-tag { width: 30%; height: 1.5rem; margin-top: .2rem; }
+
+@keyframes skeleton-shimmer {
+  to { background-position: -150% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-media,
+  .skeleton-line {
+    animation: none;
+  }
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -550,6 +595,12 @@
   margin: 0 0 0.75rem;
   font-size: clamp(1.8rem,4vw,2.3rem);
   line-height: 1.2;
+}
+
+.empty p {
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 #empty-reset {

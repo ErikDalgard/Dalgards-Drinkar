@@ -60,6 +60,8 @@ function render() {
     const pageItems = filtered.slice(start, end);
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
+    grid.setAttribute("aria-busy", "false");
+    grid.removeAttribute("aria-label");
     pageItems.forEach((v) => {
         grid.appendChild(makeCard(v, {
             onOpen: drinkNavigation.open,
