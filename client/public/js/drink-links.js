@@ -32,6 +32,9 @@ export function createDrinkNavigation(drinks, dialog) {
     });
     function show(drink) {
         currentId = String(drink.id);
+        fetch(`${API_BASE}/drinks/${encodeURIComponent(currentId)}`).catch((error) => {
+            console.error("Kunde inte hämta drink: ", error);
+        });
         setNotFound(false);
         resetShare();
         dialog.open(drink);

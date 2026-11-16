@@ -89,6 +89,9 @@ export default {
     if (getMatch && request.method === "GET") {
       const row = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
         .bind(getMatch[1]).first();
+      if (row) {
+        console.log("Drink viewed:", { id: String(row.id), name: row.drink });
+      }
       return Response.json(row ? rowToDrink(row) : { error: "Drink not found" }, {
         status: row ? 200 : 404,
         headers: corsHeaders,
@@ -113,6 +116,11 @@ export default {
         body.steps || "", body.taste || ""
       ).run();
 
+      console.log("Drink created:", {
+        id: String(result.meta.last_row_id),
+        name: body.drink,
+      });
+
       return new Response(JSON.stringify({ id: result.meta.last_row_id }), {
         status: 201,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -130,6 +138,8 @@ export default {
       }
       const id = putMatch[1];
       const body: any = await request.json();
+      const previous = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
+        .bind(id).first();
       await env.DB.prepare(
         `UPDATE drinks SET date=?, theme=?, drink=?, video_url=?, photo_url=?,
          note=?, ingredients=?, steps=?, taste=? WHERE id=?`
@@ -138,6 +148,33 @@ export default {
         body.photo || "", body.note || "", body.ingredients || "",
         body.steps || "", body.taste || "", id
       ).run();
+
+      const updated = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
+        .bind(id).first();
+      if (updated) {
+        const fields = [
+          ["date", "date", body.date],
+          ["theme", "theme", body.theme || ""],
+          ["name", "drink", body.drink],
+          ["video_url", "video_url", body.url],
+          ["photo_url", "photo_url", body.photo || ""],
+          ["note", "note", body.note || ""],
+          ["ingredients", "ingredients", body.ingredients || ""],
+          ["steps", "steps", body.steps || ""],
+          ["taste", "taste", body.taste || ""],
+        ] as const;
+        const changes = Object.fromEntries(fields
+          .filter(([column, , value]) => previous?.[column] !== value)
+          .map(([column, label, value]) => [label, {
+            from: previous?.[column] ?? null,
+            to: value ?? null,
+          }]));
+        console.log("Drink updated:", {
+          id,
+          name: updated.drink,
+          changes,
+        });
+      }
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -159,7 +196,7 @@ export default {
 
     // Hämta drinken först så vi vet vilka mediafiler som hör till den
     const drink = await env.DB
-      .prepare("SELECT photo_url, video_url FROM drinks WHERE id=?")
+      .prepare("SELECT drink, photo_url, video_url FROM drinks WHERE id=?")
       .bind(id)
       .first();
 
@@ -185,6 +222,8 @@ export default {
       .prepare("DELETE FROM drinks WHERE id=?")
       .bind(id)
       .run();
+
+    console.log("Drink deleted:", { id, name: drink.drink });
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
