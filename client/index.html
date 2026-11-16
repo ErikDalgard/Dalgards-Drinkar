@@ -71,27 +71,41 @@
   </button>
 
 </div>
-<div class="filter-panel" id="filter-panel">
-    <div class="filter-group filter-theme-group">
-      <label>Tema</label>
-      <button type="button" class="theme-picker-toggle" id="theme-picker-toggle">
-        <span id="theme-picker-label">Alla teman</span>
-      </button>
+<div class="filter-backdrop" id="filter-backdrop" hidden></div>
+<div class="filter-panel" id="filter-panel" aria-label="Filtrera drinkar">
+  <div class="filter-sheet-header">
+    <div>
+      <p class="filter-sheet-kicker">Urkällan</p>
+      <h2>Filtrera drinkar</h2>
     </div>
+    <button type="button" class="filter-sheet-close" id="filter-sheet-close" aria-label="Stäng filter">×</button>
+  </div>
+    <div class="filter-group filter-theme-group theme-picker" id="theme-filter-group">
+      <label>Tema</label>
+      <button type="button" class="theme-picker-toggle" id="theme-picker-toggle" aria-expanded="false" aria-controls="theme-picker-panel">
+        <span id="theme-picker-label">Alla teman</span>
+        <span aria-hidden="true">▾</span>
+      </button>
+      <div class="theme-picker-panel" id="theme-picker-panel" hidden>
+        <input type="search" id="theme-picker-search" placeholder="Sök tema…" autocomplete="off" aria-label="Sök tema">
+        <div class="theme-chip-list" id="theme-chip-list" role="group" aria-label="Välj tema"></div>
+      </div>
+    </div>
+    <div class="filter-picker-slot" id="filter-picker-slot" hidden></div>
 
-  <div class="filter-group">
+  <div class="filter-group" id="spirit-filter-group">
     <label>Sprit</label>
     <div class="theme-picker">
-      <button type="button" class="theme-picker-toggle" id="spirit-picker-toggle">
+      <button type="button" class="theme-picker-toggle" id="spirit-picker-toggle" aria-expanded="false" aria-controls="spirit-picker-panel">
         <span id="spirit-picker-label">All sprit</span> ▾
       </button>
-      <div class="theme-picker-panel" id="spirit-picker-panel">
+      <div class="theme-picker-panel" id="spirit-picker-panel" hidden>
         <div class="theme-chip-list" id="spirit-chip-list"></div>
       </div>
     </div>
 </div>
 
-  <div class="filter-group filter-taste-group">
+  <div class="filter-group filter-taste-group" id="taste-filter-group">
     <label id="taste-filter-label">Smakprofil</label>
     <div class="theme-picker">
       <button type="button" class="theme-picker-toggle" id="taste-picker-toggle" aria-expanded="false" aria-controls="taste-picker-panel" aria-labelledby="taste-filter-label taste-picker-label">
@@ -104,7 +118,7 @@
     </div>
   </div>
 
-  <div class="date-range">
+  <div class="date-range" id="date-range-filter">
     <div class="filter-group">
       <label for="date-from">Från datum</label>
       <input type="date" id="date-from">
@@ -113,6 +127,11 @@
       <label for="date-to">Till datum</label>
       <input type="date" id="date-to">
     </div>
+  </div>
+
+  <div class="filter-sheet-actions">
+    <button type="button" class="filter-sheet-clear" id="filter-sheet-clear">Rensa filter</button>
+    <button type="button" class="filter-sheet-apply" id="filter-sheet-apply">Visa resultat</button>
   </div>
 
 
@@ -152,38 +171,21 @@
   <h2 id="drink-not-found-title" tabindex="-1">Drinken finns ej i Urkällan...</h2>
   <a class="drink-link-home" id="drink-link-home" href="./">Tillbaka</a>
 </section>
-<div class="grid" id="grid"></div>
+<div class="grid" id="grid" aria-busy="true" aria-label="Laddar drinkar">
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+  <div class="skeleton-card" aria-hidden="true"><div class="skeleton-media"></div><div class="skeleton-body"><span class="skeleton-line skeleton-title"></span><span class="skeleton-line skeleton-meta"></span><span class="skeleton-line skeleton-tag"></span></div></div>
+</div>
 <section class="empty" id="empty" aria-labelledby="empty-title" style="display:none;">
   <h2 id="empty-title">Inget resultat hittades i Urkällan!</h2>
   <button type="button" id="empty-reset">Rensa sökning och filter</button>
 </section>
 <div class="pagination" id="pagination"></div>
-
-<div class="theme-modal-backdrop" id="theme-modal-backdrop">
-  <div class="theme-modal">
-    
-    <div class="theme-modal-header">
-      <div>
-        <p class="theme-modal-kicker">Filtrera Urkällan</p>
-        <h2>Välj tema</h2>
-      </div>
-
-      <button type="button" class="theme-modal-close" id="theme-modal-close">
-        ×
-      </button>
-    </div>
-
-    <input
-      type="text"
-      id="theme-picker-search"
-      placeholder="Sök tema …"
-      autocomplete="off"
-    >
-
-    <div class="theme-chip-list" id="theme-chip-list"></div>
-
-  </div>
-</div>
 
 <dialog class="modal-backdrop" id="modal-backdrop" aria-labelledby="modal-drink">
   <div class="modal">

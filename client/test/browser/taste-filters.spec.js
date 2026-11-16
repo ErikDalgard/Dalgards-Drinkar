@@ -44,6 +44,8 @@ test('taste filters sit beside spirits, exclude missing profiles and support rem
   await page.locator('#spirit-chip-list').getByRole('button', { name: 'Vodka', exact: true }).click();
   await expect(page.locator('#grid .card')).toHaveCount(0);
   await page.locator('#spirit-picker-toggle').click();
+  const applyFilters = page.getByRole('button', { name: 'Visa resultat', exact: true });
+  if (await applyFilters.isVisible()) await applyFilters.click();
   await page.getByRole('button', { name: 'Ta bort filter: Stark', exact: true }).click();
   await expect(page.locator('#grid .card')).toHaveCount(1);
   await expect(page.locator('#grid')).toContainText('Syrlig vodka');

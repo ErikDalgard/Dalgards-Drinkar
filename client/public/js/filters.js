@@ -6,12 +6,51 @@ export function createFilters(themes, onChange, videos = []) {
     let selectedTheme = "";
     const selectedSpirits = new Set();
     const selectedTastes = new Set();
+    const pickerSlot = document.getElementById("filter-picker-slot");
+    const filterPanel = document.getElementById("filter-panel");
+    function isMobileFilterSheet() {
+        return window.matchMedia("(max-width: 650px)").matches;
+    }
+    function openPicker(panel, toggle, beforeId) {
+        closeThemePicker();
+        closeSpiritPicker();
+        closeTastePicker();
+        if (isMobileFilterSheet()) {
+            filterPanel.insertBefore(pickerSlot, document.getElementById(beforeId));
+            pickerSlot.hidden = false;
+            pickerSlot.classList.remove("is-open");
+            pickerSlot.append(panel);
+        } else {
+            pickerSlot.classList.remove("is-open");
+            pickerSlot.hidden = true;
+            toggle.parentElement.append(panel);
+        }
+        panel.hidden = false;
+        panel.classList.add("open");
+        toggle.setAttribute("aria-expanded", "true");
+        if (isMobileFilterSheet()) {
+            requestAnimationFrame(() => pickerSlot.classList.add("is-open"));
+        }
+    }
     function syncFilterToggle() {
         const open = document.getElementById("filter-panel").classList.contains("open");
         const toggle = document.getElementById("filter-toggle");
         toggle.setAttribute("aria-expanded", String(open));
         toggle.classList.toggle("active", open);
-        document.getElementById("filter-toggle-text").textContent = open ? "Dölj filter" : "Visa filter";
+        const mobileSheetOpen = open && isMobileFilterSheet();
+        document.getElementById("filter-toggle-text").textContent = open
+            ? (mobileSheetOpen ? "Stäng filter" : "Dölj filter")
+            : "Visa filter";
+        document.getElementById("filter-backdrop").hidden = !mobileSheetOpen;
+        document.body.classList.toggle("filter-sheet-open", mobileSheetOpen);
+        const panel = document.getElementById("filter-panel");
+        if (mobileSheetOpen) {
+            panel.setAttribute("role", "dialog");
+            panel.setAttribute("aria-modal", "true");
+        } else {
+            panel.removeAttribute("role");
+            panel.removeAttribute("aria-modal");
+        }
     }
     function notifyChange() {
         syncFilterToggle();
@@ -31,6 +70,7 @@ export function createFilters(themes, onChange, videos = []) {
         selectedTheme = "";
         selectedSpirits.clear();
         selectedTastes.clear();
+        closeThemePicker();
         closeTastePicker();
         ["date-from", "date-to"].forEach((id) => {
             document.getElementById(id).value = "";
@@ -38,7 +78,7 @@ export function createFilters(themes, onChange, videos = []) {
         document.getElementById("filter-panel").classList.remove("open");
         document.getElementById("filter-toggle-text").textContent = "Visa filter";
         document.getElementById("filter-toggle").classList.remove("active");
-        document.getElementById("spirit-picker-panel").classList.remove("open");
+        closeSpiritPicker();
         notifyChange();
     }
     function renderActiveFilters() {
@@ -134,7 +174,7 @@ export function createFilters(themes, onChange, videos = []) {
         list.innerHTML = "";
         const allChip = document.createElement("button");
         allChip.type = "button";
-        allChip.className = "theme-chip";
+        allChip.className = "taste-filter-option spirit-filter-option";
         allChip.textContent = "All sprit";
         allChip.dataset.spirit = "";
         allChip.addEventListener("click", () => {
@@ -142,14 +182,11 @@ export function createFilters(themes, onChange, videos = []) {
         });
         list.appendChild(allChip);
         SPIRITS.forEach((spirit) => {
-            const hue = hashHue(spirit);
             const chip = document.createElement("button");
             chip.type = "button";
-            chip.className = "theme-chip";
+            chip.className = "taste-filter-option spirit-filter-option";
             chip.dataset.spirit = spirit;
             chip.textContent = spirit;
-            chip.style.background = `hsl(${hue},45%,88%)`;
-            chip.style.color = `hsl(${hue},45%,30%)`;
             chip.addEventListener("click", () => {
                 selectSpirit(spirit);
             });
@@ -185,7 +222,7 @@ export function createFilters(themes, onChange, videos = []) {
     }
     function updateSpiritChipStyles() {
         document
-            .querySelectorAll("#spirit-chip-list .theme-chip")
+            .querySelectorAll("#spirit-chip-list .spirit-filter-option")
             .forEach((chip) => {
             const spirit = chip.dataset.spirit;
             const isActive = spirit === ""
@@ -196,31 +233,40 @@ export function createFilters(themes, onChange, videos = []) {
         });
     }
     // ============================================
-    // Theme Selection & Modal
+    // Theme Selection & Picker
     // ============================================
+    const themePanel = document.getElementById("theme-picker-panel");
+    const themeToggle = document.getElementById("theme-picker-toggle");
+    const themeSearch = document.getElementById("theme-picker-search");
+    function closePickerPanel(panel, toggle) {
+        const wasOpen = !panel.hidden;
+        panel.hidden = true;
+        panel.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        if (wasOpen && pickerSlot.contains(panel)) {
+            pickerSlot.classList.remove("is-open");
+            pickerSlot.hidden = true;
+        }
+    }
+    function closeThemePicker() {
+        closePickerPanel(themePanel, themeToggle);
+    }
+    function openThemePicker() {
+        closeTastePicker();
+        closeSpiritPicker();
+        themeSearch.value = "";
+        document.querySelectorAll("#theme-chip-list .theme-chip").forEach((chip) => {
+            chip.style.display = "";
+        });
+        openPicker(themePanel, themeToggle, "spirit-filter-group");
+        themeSearch.focus();
+    }
     function selectTheme(theme) {
         selectedTheme = theme;
         document.getElementById("theme-picker-label").textContent =
             theme || "Alla teman";
-        closeThemeModal();
+        closeThemePicker();
         notifyChange();
-    }
-    function openThemeModal() {
-        const modal = document.getElementById("theme-modal-backdrop");
-        modal.classList.add("open");
-        const search = document.getElementById("theme-picker-search");
-        search.value = "";
-        document.querySelectorAll("#theme-chip-list .theme-chip").forEach((chip) => {
-            chip.style.display = "";
-        });
-        setTimeout(() => {
-            search.focus();
-        }, 50);
-    }
-    function closeThemeModal() {
-        document
-            .getElementById("theme-modal-backdrop")
-            .classList.remove("open");
     }
     function filterByTheme(theme) {
         selectTheme(theme);
@@ -259,9 +305,7 @@ export function createFilters(themes, onChange, videos = []) {
         });
     }
     function closeTastePicker() {
-        tastePanel.hidden = true;
-        tastePanel.classList.remove("open");
-        tasteToggle.setAttribute("aria-expanded", "false");
+        closePickerPanel(tastePanel, tasteToggle);
     }
     const tasteOptions = document.getElementById("taste-filter-options");
     [{ id: "", label: "Alla smaker" }, ...TASTE_FILTERS].forEach((filter) => {
@@ -284,53 +328,67 @@ export function createFilters(themes, onChange, videos = []) {
     });
     tasteToggle.addEventListener("click", () => {
         const open = tastePanel.hidden;
-        tastePanel.hidden = !open;
-        tastePanel.classList.toggle("open", open);
-        tasteToggle.setAttribute("aria-expanded", String(open));
-        if (open) document.getElementById("spirit-picker-panel").classList.remove("open");
+        if (open) {
+            openPicker(tastePanel, tasteToggle, "date-range-filter");
+        } else {
+            closeTastePicker();
+        }
     });
     document.addEventListener("click", (event) => {
         if (!tastePanel.contains(event.target) && !tasteToggle.contains(event.target)) closeTastePicker();
     });
-    tasteToggle.parentElement.addEventListener("keydown", (event) => {
+    tastePanel.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+            event.stopPropagation();
             closeTastePicker();
             tasteToggle.focus();
         }
     });
     // Spirit picker
+    const spiritPanel = document.getElementById("spirit-picker-panel");
+    const spiritToggle = document.getElementById("spirit-picker-toggle");
+    function closeSpiritPicker() {
+        closePickerPanel(spiritPanel, spiritToggle);
+    }
     document
         .getElementById("spirit-picker-toggle")
         .addEventListener("click", (e) => {
         e.stopPropagation();
-        closeTastePicker();
-        document
-            .getElementById("spirit-picker-panel")
-            .classList.toggle("open");
+        const open = spiritPanel.hidden;
+        if (open) {
+            openPicker(spiritPanel, spiritToggle, "date-range-filter");
+        } else {
+            closeSpiritPicker();
+        }
     });
     document.addEventListener("click", (e) => {
-        const panel = document.getElementById("spirit-picker-panel");
-        if (!panel.contains(e.target) &&
-            e.target.id !== "spirit-picker-toggle") {
-            panel.classList.remove("open");
+        if (!spiritPanel.contains(e.target) && !spiritToggle.contains(e.target)) {
+            closeSpiritPicker();
+        }
+    });
+    spiritPanel.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            event.stopPropagation();
+            closeSpiritPicker();
+            spiritToggle.focus();
         }
     });
     // Theme picker
-    document
-        .getElementById("theme-picker-toggle")
-        .addEventListener("click", () => {
-        openThemeModal();
+    themeToggle.addEventListener("click", () => {
+        const open = themePanel.hidden;
+        if (open) openThemePicker();
+        else closeThemePicker();
     });
-    document
-        .getElementById("theme-modal-close")
-        .addEventListener("click", () => {
-        closeThemeModal();
+    themePanel.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            event.stopPropagation();
+            closeThemePicker();
+            themeToggle.focus();
+        }
     });
-    document
-        .getElementById("theme-modal-backdrop")
-        .addEventListener("click", (e) => {
-        if (e.target.id === "theme-modal-backdrop") {
-            closeThemeModal();
+    document.addEventListener("click", (event) => {
+        if (!themePanel.contains(event.target) && !themeToggle.contains(event.target)) {
+            closeThemePicker();
         }
     });
     document
@@ -363,8 +421,53 @@ export function createFilters(themes, onChange, videos = []) {
         const filterPanel = document.getElementById("filter-panel");
         if (!filterPanel)
             return;
-        filterPanel.classList.toggle("open");
+        const opening = !filterPanel.classList.contains("open");
+        if (!opening) {
+            closeThemePicker();
+            closeSpiritPicker();
+            closeTastePicker();
+        }
+        filterPanel.classList.toggle("open", opening);
         syncFilterToggle();
+        if (opening && isMobileFilterSheet()) {
+            document.getElementById("filter-sheet-close").focus();
+        }
+    });
+    function closeFilterSheet(restoreFocus = true) {
+        document.getElementById("filter-panel").classList.remove("open");
+        closeThemePicker();
+        closeSpiritPicker();
+        closeTastePicker();
+        syncFilterToggle();
+        if (restoreFocus && isMobileFilterSheet()) {
+            document.getElementById("filter-toggle").focus({ preventScroll: true });
+        }
+    }
+    document.getElementById("filter-sheet-close").addEventListener("click", () => closeFilterSheet());
+    document.getElementById("filter-sheet-apply").addEventListener("click", () => closeFilterSheet());
+    document.getElementById("filter-sheet-clear").addEventListener("click", () => resetFilters());
+    document.getElementById("filter-backdrop").addEventListener("click", () => closeFilterSheet());
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && isMobileFilterSheet() &&
+            document.getElementById("filter-panel").classList.contains("open")) {
+            closeFilterSheet();
+            return;
+        }
+        if (event.key === "Tab" && isMobileFilterSheet() &&
+            document.getElementById("filter-panel").classList.contains("open")) {
+            const panel = document.getElementById("filter-panel");
+            const focusable = [...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+                .filter((element) => element.offsetParent !== null);
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first?.focus();
+            }
+        }
     });
     document
         .getElementById("date-from")

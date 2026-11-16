@@ -51,6 +51,8 @@ test('admin changes persist and drive public spirit filters and recipe links', a
   await page.locator('#filter-toggle').click();
   await page.locator('#spirit-picker-toggle').click();
   await page.locator('#spirit-chip-list').getByRole('button', { name: 'Bourbon', exact: true }).click();
+  const applyFilters = page.getByRole('button', { name: 'Visa resultat', exact: true });
+  if (await applyFilters.isVisible()) await applyFilters.click();
   await expect(page.locator('#grid .card')).toHaveCount(1);
   await page.locator('#grid .card-open').first().click();
   await expect(page.locator('#recipe-spirit-links')).toContainText('Bourbon');
