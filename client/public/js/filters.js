@@ -237,7 +237,6 @@ export function createFilters(themes, onChange, videos = []) {
     // ============================================
     const themePanel = document.getElementById("theme-picker-panel");
     const themeToggle = document.getElementById("theme-picker-toggle");
-    const themeSearch = document.getElementById("theme-picker-search");
     function closePickerPanel(panel, toggle) {
         const wasOpen = !panel.hidden;
         panel.hidden = true;
@@ -254,12 +253,7 @@ export function createFilters(themes, onChange, videos = []) {
     function openThemePicker() {
         closeTastePicker();
         closeSpiritPicker();
-        themeSearch.value = "";
-        document.querySelectorAll("#theme-chip-list .theme-chip").forEach((chip) => {
-            chip.style.display = "";
-        });
         openPicker(themePanel, themeToggle, "spirit-filter-group");
-        themeSearch.focus();
     }
     function selectTheme(theme) {
         selectedTheme = theme;
@@ -390,18 +384,6 @@ export function createFilters(themes, onChange, videos = []) {
         if (!themePanel.contains(event.target) && !themeToggle.contains(event.target)) {
             closeThemePicker();
         }
-    });
-    document
-        .getElementById("theme-picker-search")
-        .addEventListener("input", (e) => {
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll("#theme-chip-list .theme-chip").forEach((chip) => {
-            chip.style.display = chip.textContent
-                .toLowerCase()
-                .includes(q)
-                ? ""
-                : "none";
-        });
     });
     // Search, sorting & modal
     document

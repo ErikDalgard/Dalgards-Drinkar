@@ -592,6 +592,22 @@
   width: 100%;
 }
 
+.filter-chevron {
+  display: inline-block;
+  flex: 0 0 auto;
+  transition: transform 180ms ease;
+}
+
+.theme-picker-toggle[aria-expanded="true"] .filter-chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-chevron {
+    transition: none;
+  }
+}
+
 .theme-picker {
   position: relative;
   width: 100%;
@@ -781,9 +797,35 @@
     border-radius: 12px;
   }
 
+  .filter-picker-slot #spirit-picker-panel {
+    max-height: min(52dvh,460px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+
   .filter-picker-slot #theme-chip-list {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    align-items: stretch;
+    gap: .5rem;
     max-height: none;
     overflow: visible;
+  }
+
+  .filter-picker-slot #theme-chip-list .theme-chip {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    padding: .55rem .4rem;
+    font-size: .7rem;
+    letter-spacing: .04em;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .filter-picker-slot .theme-picker-panel.open {
@@ -954,17 +996,30 @@
   }
 
   #filter-panel .date-range {
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 1rem;
   }
 
+  #filter-panel .date-range .filter-group {
+    width: 100%;
+    min-width: 0;
+  }
+
   #filter-panel input[type="date"] {
+    display: block;
+    flex: 1 1 0;
     min-height: 46px;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
     padding: .5rem .6rem;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: var(--surface-hover);
     color: var(--text);
     font: inherit;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
 }
@@ -1038,11 +1093,6 @@
     width: 500px;
     max-width: min(500px,calc(100vw - 2rem));
     border-radius: 16px;
-  }
-
-  #theme-picker-search {
-    margin-bottom: .6rem;
-    font-size: 1.1rem;
   }
 
   #theme-chip-list .theme-chip {
@@ -1120,28 +1170,6 @@
 
 
 /* Theme picker and colored theme choices */
-
-#theme-picker-search {
-  width: 100%;
-  font-family: "Cormorant Garamond",serif;
-  font-size: 1.05rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 0.65rem 0.8rem;
-  margin-bottom: 0.75rem;
-}
-
-#theme-picker-search::placeholder {
-  color: var(--text-muted);
-}
-
-#theme-picker-search:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
 .theme-chip-list {
   display: flex;
   flex-wrap: wrap;
