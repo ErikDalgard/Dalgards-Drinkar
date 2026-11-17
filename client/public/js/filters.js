@@ -8,6 +8,7 @@ export function createFilters(themes, onChange, videos = []) {
     const selectedTastes = new Set();
     const pickerSlot = document.getElementById("filter-picker-slot");
     const filterPanel = document.getElementById("filter-panel");
+    const filterContent = filterPanel.querySelector(".filter-sheet-content");
     function isMobileFilterSheet() {
         return window.matchMedia("(max-width: 650px)").matches;
     }
@@ -16,7 +17,7 @@ export function createFilters(themes, onChange, videos = []) {
         closeSpiritPicker();
         closeTastePicker();
         if (isMobileFilterSheet()) {
-            filterPanel.insertBefore(pickerSlot, document.getElementById(beforeId));
+            filterContent.insertBefore(pickerSlot, document.getElementById(beforeId));
             pickerSlot.hidden = false;
             pickerSlot.classList.remove("is-open");
             pickerSlot.append(panel);
@@ -29,7 +30,12 @@ export function createFilters(themes, onChange, videos = []) {
         panel.classList.add("open");
         toggle.setAttribute("aria-expanded", "true");
         if (isMobileFilterSheet()) {
-            requestAnimationFrame(() => pickerSlot.classList.add("is-open"));
+            const expandPickerSlot = () => {
+                if (!pickerSlot.contains(panel) || panel.hidden) return;
+                pickerSlot.style.height = `${Math.ceil(panel.getBoundingClientRect().height)}px`;
+                pickerSlot.classList.add("is-open");
+            };
+            requestAnimationFrame(expandPickerSlot);
         }
     }
     function syncFilterToggle() {
@@ -244,6 +250,7 @@ export function createFilters(themes, onChange, videos = []) {
         toggle.setAttribute("aria-expanded", "false");
         if (wasOpen && pickerSlot.contains(panel)) {
             pickerSlot.classList.remove("is-open");
+            pickerSlot.style.height = "0px";
             pickerSlot.hidden = true;
         }
     }
