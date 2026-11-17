@@ -41,12 +41,32 @@
 
 .controls .search-wrapper {
   min-width: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fffdf9 0%, var(--surface) 52%, var(--surface-hover) 100%);
+  box-shadow: 0 5px 18px rgba(58,42,28,.11), inset 0 1px rgba(255,255,255,.8);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.controls .search-wrapper:hover {
+  border-color: var(--accent);
+}
+
+.controls .search-wrapper:focus-within {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(110,68,35,.15), 0 7px 20px rgba(58,42,28,.12);
 }
 
 .controls input#search {
   min-width: 0;
   width: 100%;
   min-height: 48px;
+  border: 0;
+  border-radius: inherit;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
   font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1.125rem;
   font-weight: 500;
@@ -76,8 +96,17 @@
 }
 
 .controls input#search::placeholder {
-  color: var(--text);
-  opacity: 1;
+  color: var(--text-muted);
+  opacity: .95;
+}
+
+.controls .search-icon {
+  color: var(--accent);
+  transition: transform .18s ease, color .18s ease;
+}
+
+.controls .search-wrapper:focus-within .search-icon {
+  transform: scale(1.06);
 }
 
 .search-suggestions[hidden] {
@@ -1070,6 +1099,27 @@
 }
 
 @media (min-width:651px) {
+  .controls #filter-toggle {
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(145deg, #fffdf9 0%, var(--surface) 52%, var(--surface-hover) 100%);
+    box-shadow: 0 5px 18px rgba(58,42,28,.11), inset 0 1px rgba(255,255,255,.8);
+    transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, color .18s ease;
+  }
+
+  .controls #filter-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+    background: var(--surface-hover);
+    color: var(--accent);
+    box-shadow: 0 7px 20px rgba(58,42,28,.14);
+  }
+
+  .controls #filter-toggle:focus-visible {
+    outline: 3px solid rgba(110,68,35,.2);
+    outline-offset: 2px;
+  }
+
   #filter-panel.open {
     max-width: 1100px;
     gap: 1rem;
@@ -1083,9 +1133,10 @@
   }
 
   .controls #filter-toggle.active {
-    border-color: var(--accent);
-    background: var(--surface-hover);
-    color: var(--accent);
+    border-color: var(--leaf);
+    background: var(--leaf);
+    color: #fff;
+    box-shadow: 0 5px 16px rgba(107,118,84,.24);
   }
 
   #filter-panel .theme-picker-toggle {
