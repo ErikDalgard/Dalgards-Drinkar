@@ -874,6 +874,11 @@
     transition: transform .28s ease,visibility .28s ease;
   }
 
+  #filter-panel.open.picker-open {
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
   #filter-panel:not(.open) {
     position: fixed;
     z-index: 1001;

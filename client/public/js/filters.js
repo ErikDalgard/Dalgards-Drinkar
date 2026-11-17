@@ -30,10 +30,29 @@ export function createFilters(themes, onChange, videos = []) {
         panel.classList.add("open");
         toggle.setAttribute("aria-expanded", "true");
         if (isMobileFilterSheet()) {
+            filterPanel.classList.add("picker-open");
             const expandPickerSlot = () => {
                 if (!pickerSlot.contains(panel) || panel.hidden) return;
                 pickerSlot.style.height = `${Math.ceil(panel.getBoundingClientRect().height)}px`;
                 pickerSlot.classList.add("is-open");
+                const control = toggle.closest(".filter-group");
+                if (!control) return;
+                const contentRect = filterContent.getBoundingClientRect();
+                const controlRect = control.getBoundingClientRect();
+                const startScroll = filterContent.scrollTop;
+                const scrollDistance = controlRect.top - contentRect.top;
+                const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                const startTime = performance.now();
+                const moveContentWithPicker = (time) => {
+                    if (!pickerSlot.contains(panel) || panel.hidden) return;
+                    const progress = reduceMotion ? 1 : Math.min(1, (time - startTime) / 600);
+                    const easedProgress = 1 - Math.pow(1 - progress, 3);
+                    const maxScroll = Math.max(0, filterContent.scrollHeight - filterContent.clientHeight);
+                    const target = startScroll + scrollDistance * easedProgress;
+                    filterContent.scrollTop = Math.max(0, Math.min(maxScroll, target));
+                    if (progress < 1) requestAnimationFrame(moveContentWithPicker);
+                };
+                requestAnimationFrame(moveContentWithPicker);
             };
             requestAnimationFrame(expandPickerSlot);
         }
@@ -252,6 +271,7 @@ export function createFilters(themes, onChange, videos = []) {
             pickerSlot.classList.remove("is-open");
             pickerSlot.style.height = "0px";
             pickerSlot.hidden = true;
+            filterPanel.classList.remove("picker-open");
         }
     }
     function closeThemePicker() {
