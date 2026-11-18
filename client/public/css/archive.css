@@ -426,7 +426,7 @@
 .card-favorite {
   position: absolute;
   top: .65rem;
-  left: .65rem;
+  right: .65rem;
   z-index: 3;
   display: grid;
   place-items: center;
@@ -575,16 +575,6 @@
   background: hsl(var(--theme-hue, 30),45%,32%);
 }
 
-.card .date {
-  margin: 0;
-  margin-left: auto;
-  flex: 0 0 auto;
-  color: var(--text-muted);
-  font-size: .86rem;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
 .card-theme:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
@@ -617,7 +607,7 @@
   }
 
   .card-drink {
-    font-size: .95rem;
+    font-size: 1rem;
     margin-bottom: .4rem;
   }
 
@@ -635,20 +625,15 @@
     margin-top: auto;
   }
 
-  .card .date {
-    font-size: .62rem;
-    line-height: 1.2;
-  }
-
   .card-theme {
     padding: .2rem .3rem;
-    font-size: .7rem;
+    font-size: .75rem;
     font-weight: 500;
   }
 
   .card-favorite {
     top: .4rem;
-    left: .4rem;
+    right: .4rem;
     width: 36px;
     height: 36px;
   }

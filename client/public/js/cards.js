@@ -3,13 +3,6 @@ import { escapeHtml } from "./utils.js";
 import { isFavorite, toggleFavorite } from "./favorites.js";
 import { showFavoriteToast } from "./favorite-toast.js";
 
-function formatCardDate(value) {
-    const date = new Date(`${value}T12:00:00`);
-    return Number.isNaN(date.getTime())
-        ? value
-        : date.toLocaleDateString("sv-SE", { day: "numeric", month: "short", year: "numeric" });
-}
-
 export function makeCard(v, { onOpen, onThemeSelect }) {
     const card = document.createElement("article");
     card.className = "card";
@@ -20,7 +13,6 @@ export function makeCard(v, { onOpen, onThemeSelect }) {
       <h2 class="card-drink"><button type="button" class="card-open">${escapeHtml(v.drink)}</button></h2>
       <div class="card-meta">
         ${v.theme?.trim() ? `<button type="button" class="card-theme" title="${escapeHtml(v.theme)}">${escapeHtml(v.theme)}</button>` : ""}
-        <time class="date"></time>
       </div>
     </div>`;
     if (v.photo) {
@@ -52,9 +44,6 @@ export function makeCard(v, { onOpen, onThemeSelect }) {
         showFavoriteToast(saved);
     });
     card.querySelector(".card-media").append(favoriteButton);
-    const date = card.querySelector("time");
-    date.dateTime = v.date;
-    date.textContent = formatCardDate(v.date);
     card.querySelector(".card-open").addEventListener("click", () => onOpen(v));
     const themeButton = card.querySelector(".card-theme");
     if (themeButton) {
