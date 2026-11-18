@@ -212,9 +212,11 @@
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
             <span>Spara som favorit</span>
           </button>
-          <button type="button" id="copy-drink-link" class="copy-drink-link">Kopiera länk</button>
-          <span id="copy-link-status" role="status" aria-live="polite"></span>
-          <input id="drink-link-fallback" type="text" readonly aria-label="Länk till drinken – kopiera manuellt" hidden>
+          <button type="button" id="share-drink" class="share-drink">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></svg>
+            <span>Dela</span>
+          </button>
+          <span id="share-status" class="share-status" role="status" aria-live="polite"></span>
         </div>
         <p class="note" id="modal-note"></p>
         <div class="recipe-block" id="recipe-block" style="display:none;">

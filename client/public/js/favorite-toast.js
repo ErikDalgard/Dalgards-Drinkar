@@ -27,7 +27,3 @@ export function showFavoriteToast(saved, inDialog = false) {
         saved ? "saved" : "removed",
     );
 }
-
-export function showDialogSuccessToast(message) {
-    showToast(message, true, "saved");
-}

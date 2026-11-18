@@ -551,7 +551,11 @@ dialog.modal-backdrop::backdrop {
   color: var(--accent);
 }
 
-.copy-drink-link {
+.share-drink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
   padding: 0.45rem 0.8rem;
   min-height: 44px;
   border: 1px solid var(--border);
@@ -561,6 +565,11 @@ dialog.modal-backdrop::backdrop {
   font: inherit;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.share-drink svg {
+  width: 18px;
+  height: 18px;
 }
 
 .modal-favorite {
@@ -601,19 +610,17 @@ dialog.modal-backdrop::backdrop {
   outline-offset: 2px;
 }
 
-.copy-drink-link:hover {
+.share-drink:hover {
   background: var(--surface-hover);
   border-color: var(--accent);
 }
 
-#drink-link-fallback {
-  width: 100%;
-  min-width: 0;
-  padding: 0.6rem;
-  font: inherit;
-  font-size: 1rem;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+.share-status {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.share-status:empty {
+  display: none;
 }

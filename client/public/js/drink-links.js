@@ -1,14 +1,12 @@
 // Drink entries preserve the current filter parameters and list position.
-import { showDialogSuccessToast } from "./favorite-toast.js";
-
 export function createDrinkNavigation(drinks, dialog) {
     const entryToken = `${Date.now()}-${Math.random()}`;
     let currentId = null;
     let returningToList = false;
     let afterClose = null;
     const notice = document.getElementById("drink-link-notice");
-    const copyStatus = document.getElementById("copy-link-status");
-    const fallback = document.getElementById("drink-link-fallback");
+    const shareButton = document.getElementById("share-drink");
+    const shareStatus = document.getElementById("share-status");
 
     function drinkUrl(id) {
         const url = new URL(window.location.href);
@@ -16,10 +14,8 @@ export function createDrinkNavigation(drinks, dialog) {
         else url.searchParams.set("drink", id);
         return url;
     }
-    function resetShare() {
-        copyStatus.textContent = "";
-        fallback.hidden = true;
-        fallback.value = "";
+    function resetShareStatus() {
+        shareStatus.textContent = "";
     }
     function setNotFound(visible) {
         notice.hidden = !visible;
@@ -38,7 +34,7 @@ export function createDrinkNavigation(drinks, dialog) {
             console.error("Kunde inte hämta drink: ", error);
         });
         setNotFound(false);
-        resetShare();
+        resetShareStatus();
         dialog.open(drink);
     }
     function open(drink) {
@@ -52,7 +48,7 @@ export function createDrinkNavigation(drinks, dialog) {
     }
     function close() {
         currentId = null;
-        resetShare();
+        resetShareStatus();
         if (window.history.state?.drinkModalEntry === entryToken) {
             returningToList = true;
             window.history.back();
@@ -66,7 +62,7 @@ export function createDrinkNavigation(drinks, dialog) {
         const id = new URL(window.location.href).searchParams.get("drink");
         if (id === null) {
             currentId = null;
-            resetShare();
+            resetShareStatus();
             dialog.close({ updateHistory: false });
             setNotFound(false);
             return;
@@ -77,7 +73,7 @@ export function createDrinkNavigation(drinks, dialog) {
         } else {
             currentId = null;
             dialog.close({ updateHistory: false });
-            resetShare();
+            resetShareStatus();
             setNotFound(true);
         }
     }
@@ -95,25 +91,27 @@ export function createDrinkNavigation(drinks, dialog) {
             setTimeout(callback, 0);
         }
     });
-    document.getElementById("copy-drink-link").addEventListener("click", async () => {
+    shareButton.addEventListener("click", async () => {
         if (currentId === null) return;
         const id = currentId;
         const link = drinkUrl(id).href;
+        shareStatus.textContent = "";
+        if (typeof navigator.share !== "function") {
+            shareStatus.textContent = "Delning stöds inte i den här webbläsaren.";
+            return;
+        }
+        const drink = drinks.find((item) => String(item.id) === id);
         try {
-            await navigator.clipboard.writeText(link);
+            await navigator.share({
+                title: drink?.drink || "Dalgards Drinkar",
+                url: link,
+            });
+        } catch (error) {
+            if (error?.name === "AbortError") return;
+            console.error("Kunde inte dela drinklänken:", error);
             if (currentId === id) {
-                copyStatus.textContent = "";
-                fallback.hidden = true;
-                fallback.value = "";
-                showDialogSuccessToast("Länk kopierad!");
+                shareStatus.textContent = "Det gick inte att dela länken. Försök igen.";
             }
-        } catch {
-            if (currentId !== id) return;
-            copyStatus.textContent = "Markera och kopiera länken nedan.";
-            fallback.value = link;
-            fallback.hidden = false;
-            fallback.focus();
-            fallback.select();
         }
     });
     return { open, close, restore, whenClosed };
