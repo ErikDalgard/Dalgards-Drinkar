@@ -70,8 +70,19 @@ function render() {
     });
     document.getElementById("count").textContent =
         `${filtered.length} av ${allVideos.length} drinkar`;
-    document.getElementById("empty").style.display =
-        filtered.length ? "none" : "block";
+    const empty = document.getElementById("empty");
+    empty.style.display = filtered.length ? "none" : "block";
+    if (!filtered.length && filters.getState().favoritesOnly) {
+        const hasFavorites = filters.getFavoriteCount() > 0;
+        document.getElementById("empty-title").textContent = hasFavorites
+            ? "Inga favoriter matchar dina övriga filter."
+            : "Du har inte sparat några favoriter än.";
+        document.getElementById("empty-reset").textContent = hasFavorites
+            ? "Rensa sökning och filter" : "Visa alla drinkar";
+    } else {
+        document.getElementById("empty-title").textContent = "Inget resultat hittades i Urkällan!";
+        document.getElementById("empty-reset").textContent = "Rensa sökning och filter";
+    }
     renderPagination(totalPages);
 }
 // ============================================

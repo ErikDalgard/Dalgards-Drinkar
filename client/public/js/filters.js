@@ -2,13 +2,17 @@ import { themeHue } from "./themes.js";
 import { formatDrinkDate, hashHue } from "./utils.js";
 import { SPIRITS, ingredientsContainSpirit } from "./spirits.js";
 import { TASTE_FILTERS, parseTasteProfile, matchesTasteFilters } from "./taste.js";
+import { isFavorite, subscribeFavorites } from "./favorites.js";
 export function createFilters(themes, onChange, videos = []) {
     let selectedTheme = "";
+    let favoritesOnly = false;
     const selectedSpirits = new Set();
     const selectedTastes = new Set();
     const pickerSlot = document.getElementById("filter-picker-slot");
     const filterPanel = document.getElementById("filter-panel");
     const filterContent = filterPanel.querySelector(".filter-sheet-content");
+    const favoritesToggle = document.getElementById("favorites-only");
+    const favoriteCount = document.getElementById("favorites-count");
     function isMobileFilterSheet() {
         return window.matchMedia("(max-width: 650px)").matches;
     }
@@ -79,6 +83,7 @@ export function createFilters(themes, onChange, videos = []) {
     }
     function notifyChange() {
         syncFilterToggle();
+        syncFavoriteControl();
         updateTasteControls();
         updateSpiritLabel();
         updateSpiritChipStyles();
@@ -91,8 +96,14 @@ export function createFilters(themes, onChange, videos = []) {
         renderActiveFilters();
         onChange();
     }
+    function syncFavoriteControl() {
+        favoritesToggle.checked = favoritesOnly;
+        favoriteCount.textContent = String(videos.filter((video) => isFavorite(video.id)).length);
+    }
+    subscribeFavorites(() => notifyChange());
     function resetFilters() {
         selectedTheme = "";
+        favoritesOnly = false;
         selectedSpirits.clear();
         selectedTastes.clear();
         closeThemePicker();
@@ -114,6 +125,9 @@ export function createFilters(themes, onChange, videos = []) {
         const search = document.getElementById("search");
         if (selectedTheme) {
             selections.push({ label: selectedTheme, theme: true, remove: () => { selectedTheme = ""; } });
+        }
+        if (favoritesOnly) {
+            selections.push({ label: "Mina favoriter", remove: () => { favoritesOnly = false; } });
         }
         selectedSpirits.forEach((spirit) => {
             selections.push({ label: spirit, spirit: true, remove: () => selectedSpirits.delete(spirit) });
@@ -423,6 +437,10 @@ export function createFilters(themes, onChange, videos = []) {
         .addEventListener("change", () => {
         notifyChange();
     });
+    favoritesToggle.addEventListener("change", () => {
+        favoritesOnly = favoritesToggle.checked;
+        notifyChange();
+    });
     // Filter panel
     document
         .getElementById("filter-toggle")
@@ -521,6 +539,7 @@ export function createFilters(themes, onChange, videos = []) {
     function getState() {
         return {
             theme: selectedTheme,
+            favoritesOnly,
             spirits: [...selectedSpirits],
             tastes: [...selectedTastes],
             search: document.getElementById("search").value,
@@ -531,6 +550,7 @@ export function createFilters(themes, onChange, videos = []) {
     }
     function setState(state) {
         selectedTheme = themes.includes(state.theme) ? state.theme : "";
+        favoritesOnly = state.favoritesOnly === true;
         selectedSpirits.clear();
         (state.spirits || []).filter((spirit) => SPIRITS.includes(spirit)).forEach((spirit) => selectedSpirits.add(spirit));
         selectedTastes.clear();
@@ -547,6 +567,7 @@ export function createFilters(themes, onChange, videos = []) {
         const dateFrom = document.getElementById("date-from").value;
         const dateTo = document.getElementById("date-to").value;
         return videos.filter((v) => (!theme || v.theme === theme) &&
+            (!favoritesOnly || isFavorite(v.id)) &&
             (selectedSpirits.size === 0 ||
                 [...selectedSpirits].every((s) => ingredientsContainSpirit(v.ingredients, s))) &&
             matchesTasteFilters(v.taste, selectedTastes) &&
@@ -558,9 +579,10 @@ export function createFilters(themes, onChange, videos = []) {
                     .includes(q.toLowerCase())));
     }
     updateTasteControls();
+    syncFavoriteControl();
     buildThemeChips(themes);
     buildSpiritChips();
     updateSpiritChipStyles();
     renderActiveFilters();
-    return { apply, filterByTheme, filterBySpirit, getState, setState };
+    return { apply, filterByTheme, filterBySpirit, getState, setState, getFavoriteCount: () => videos.filter((video) => isFavorite(video.id)).length };
 }

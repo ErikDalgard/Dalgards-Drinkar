@@ -5,7 +5,7 @@ const drinks = [
   { ...base, id: 2, drink: 'Syrlig vodka', ingredients: 'vodka', taste: '3/5,4/5,0/5,3/5,0/5' },
   { ...base, id: 3, drink: 'Ingen smakprofil' },
 ];
-test('taste filters sit beside spirits, exclude missing profiles and support removable selections', async ({ page }) => {
+test('taste filters follow the favorite and spirit controls, exclude missing profiles and support removable selections', async ({ page }) => {
   await page.route('**/*', async route => {
     const url = new URL(route.request().url());
     if (url.origin === 'http://localhost:8787' && url.pathname === '/drinks') return route.fulfill({ json: drinks });
@@ -23,8 +23,13 @@ test('taste filters sit beside spirits, exclude missing profiles and support rem
     const taste = document.getElementById('taste-picker-toggle').getBoundingClientRect();
     return { spirit: { x: spirit.x, y: spirit.y }, taste: { x: taste.x, y: taste.y } };
   });
-  expect(Math.abs(spirit.y - taste.y)).toBeLessThan(2);
-  expect(taste.x).toBeGreaterThan(spirit.x);
+  if (page.viewportSize().width > 650) {
+    expect(taste.y).toBeGreaterThan(spirit.y);
+    expect(taste.x).toBeLessThan(spirit.x);
+  } else {
+    expect(Math.abs(spirit.y - taste.y)).toBeLessThan(2);
+    expect(taste.x).toBeGreaterThan(spirit.x);
+  }
   await page.locator('#taste-picker-toggle').click();
   await expect(page.locator('#taste-filter-info')).toContainText('2 av 3 drinkar');
   const panel = await page.locator('#taste-picker-panel').boundingBox();
