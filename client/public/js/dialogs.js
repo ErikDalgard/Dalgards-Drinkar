@@ -29,7 +29,7 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
         subscribeFavorites(syncFavoriteButton);
     }
     function openModal(v) {
-        hideFavoriteToast(true);
+        if (favoriteButton) hideFavoriteToast(true);
         currentDrink = v;
         syncFavoriteButton();
         const dialog = document.getElementById("modal-backdrop");
