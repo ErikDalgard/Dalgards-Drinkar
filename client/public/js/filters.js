@@ -13,6 +13,7 @@ export function createFilters(themes, onChange, videos = []) {
     const filterContent = filterPanel.querySelector(".filter-sheet-content");
     const favoritesToggle = document.getElementById("favorites-only");
     const favoriteCount = document.getElementById("favorites-count");
+    const favoriteUnit = document.querySelector(".favorite-filter-unit");
     function isMobileFilterSheet() {
         return window.matchMedia("(max-width: 650px)").matches;
     }
@@ -98,7 +99,13 @@ export function createFilters(themes, onChange, videos = []) {
     }
     function syncFavoriteControl() {
         favoritesToggle.checked = favoritesOnly;
-        favoriteCount.textContent = String(videos.filter((video) => isFavorite(video.id)).length);
+        const count = videos.filter((video) => isFavorite(video.id)).length;
+        favoriteCount.textContent = String(count);
+        favoriteCount.setAttribute(
+            "aria-label",
+            count === 1 ? "1 sparad drink" : `${count} sparade drinkar`,
+        );
+        favoriteUnit.textContent = count === 1 ? "drink" : "drinkar";
     }
     subscribeFavorites(() => notifyChange());
     function resetFilters() {
