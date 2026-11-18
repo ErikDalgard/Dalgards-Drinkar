@@ -566,6 +566,44 @@ dialog.modal-backdrop::backdrop {
   cursor: pointer;
 }
 
+.modal-favorite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  min-height: 44px;
+  padding: .45rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.modal-favorite svg {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-favorite:hover,
+.modal-favorite.is-favorite {
+  border-color: var(--leaf);
+  background: var(--leaf);
+  color: #fff;
+}
+
+.modal-favorite.is-favorite svg {
+  fill: currentColor;
+}
+
+.modal-favorite:focus-visible {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+}
+
 .copy-drink-link:hover {
   background: var(--surface-hover);
   border-color: var(--accent);

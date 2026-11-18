@@ -39,8 +39,8 @@
 <section class="load-error" id="load-error" aria-labelledby="load-error-title" hidden>
   <div class="load-error-content">
     <img src="public/assets/glass.png" alt="" class="load-error-glass">
-    <h2 id="load-error-title" tabindex="-1">Urkällan vilar lite just nu</h2>
-    <p>Vi verkar ha fått lite tekniska problem. Prova igen om en stund!</p>
+    <h2 id="load-error-title" tabindex="-1">Urkällan vilar lite just nu.</h2>
+    <p>Vi verkar ha fått tekniska problem. Prova igen om en stund!</p>
     <button type="button" id="load-retry">Försök igen</button>
     <p class="load-error-contact">Kvarstår problemet? Hör av dig till
       <a href="https://www.instagram.com/dalgardsdrinkar/" target="_blank" rel="noopener">Dalgardssupporten</a>.
@@ -90,6 +90,14 @@
       <div class="theme-picker-panel" id="theme-picker-panel" hidden>
         <div class="theme-chip-list" id="theme-chip-list" role="group" aria-label="Välj tema"></div>
       </div>
+    </div>
+    <div class="filter-group favorite-filter" role="group" aria-labelledby="favorite-filter-heading">
+      <span class="favorite-filter-heading" id="favorite-filter-heading">Mina favoriter</span>
+      <label class="favorite-filter-label" for="favorites-only">
+        <input type="checkbox" id="favorites-only" aria-label="Visa bara mina favoriter">
+        <span class="favorite-filter-count" id="favorites-count" aria-label="sparade drinkar">0</span>
+        <span class="favorite-filter-unit">drinkar</span>
+      </label>
     </div>
     <div class="filter-picker-slot" id="filter-picker-slot" hidden></div>
 
@@ -200,6 +208,10 @@
           <span class="date" id="modal-date"></span>
         </div>
         <div class="drink-share">
+          <button type="button" id="modal-favorite" class="modal-favorite" aria-pressed="false">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+            <span>Spara som favorit</span>
+          </button>
           <button type="button" id="copy-drink-link" class="copy-drink-link">Kopiera länk</button>
           <span id="copy-link-status" role="status" aria-live="polite"></span>
           <input id="drink-link-fallback" type="text" readonly aria-label="Länk till drinken – kopiera manuellt" hidden>
@@ -216,7 +228,9 @@
       </div>
     </div>
   </div>
+  <div class="favorite-toast" id="dialog-favorite-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 </dialog>
+<div class="favorite-toast" id="favorite-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <footer class="site-footer">
   <div class="footer-content">
     <div class="footer-text">

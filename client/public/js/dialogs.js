@@ -1,10 +1,37 @@
 import { themeHue } from "./themes.js";
 import { formatDrinkDate } from "./utils.js";
 import { renderRecipeGroups, renderTasteProfile, renderSpiritLinks } from "./recipes.js";
+import { isFavorite, subscribeFavorites, toggleFavorite } from "./favorites.js";
+import { hideFavoriteToast, showFavoriteToast } from "./favorite-toast.js";
 export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSelect = () => {}, mediaUrl = (path) => `${R2_BASE_URL}${path}`) {
     let modalTrigger = null;
     let previousBodyOverflow = "";
+    let currentDrink = null;
+    const favoriteButton = document.getElementById("modal-favorite");
+    function syncFavoriteButton() {
+        if (!currentDrink || !favoriteButton) return;
+        const active = isFavorite(currentDrink.id);
+        favoriteButton.classList.toggle("is-favorite", active);
+        favoriteButton.setAttribute("aria-pressed", String(active));
+        favoriteButton.setAttribute("aria-label", active
+            ? `Ta bort ${currentDrink.drink} från favoriter`
+            : `Spara ${currentDrink.drink} som favorit`);
+        favoriteButton.querySelector("span").textContent = active
+            ? "Sparad favorit" : "Spara som favorit";
+    }
+    if (favoriteButton) {
+        favoriteButton.addEventListener("click", () => {
+            if (currentDrink) {
+                const saved = toggleFavorite(currentDrink.id);
+                showFavoriteToast(saved, true);
+            }
+        });
+        subscribeFavorites(syncFavoriteButton);
+    }
     function openModal(v) {
+        hideFavoriteToast(true);
+        currentDrink = v;
+        syncFavoriteButton();
         const dialog = document.getElementById("modal-backdrop");
         if (!dialog.open) {
             modalTrigger = document.activeElement;
@@ -48,6 +75,7 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
         const video = document.getElementById("modal-video");
         video.pause();
         video.src = "";
+        currentDrink = null;
         document
             .getElementById("modal-backdrop")
             .classList.remove("open");
