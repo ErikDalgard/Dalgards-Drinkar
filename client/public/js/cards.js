@@ -15,7 +15,6 @@ export function makeCard(v, { onOpen, onThemeSelect }) {
     card.className = "card";
     card.innerHTML = `
     <div class="card-media">
-      <span class="card-play" aria-hidden="true">▶</span>
     </div>
     <div class="card-body">
       <h2 class="card-drink"><button type="button" class="card-open">${escapeHtml(v.drink)}</button></h2>
