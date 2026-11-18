@@ -1,4 +1,6 @@
 // Drink entries preserve the current filter parameters and list position.
+import { showDialogSuccessToast } from "./favorite-toast.js";
+
 export function createDrinkNavigation(drinks, dialog) {
     const entryToken = `${Date.now()}-${Math.random()}`;
     let currentId = null;
@@ -99,7 +101,12 @@ export function createDrinkNavigation(drinks, dialog) {
         const link = drinkUrl(id).href;
         try {
             await navigator.clipboard.writeText(link);
-            if (currentId === id) copyStatus.textContent = "Länk kopierad!";
+            if (currentId === id) {
+                copyStatus.textContent = "";
+                fallback.hidden = true;
+                fallback.value = "";
+                showDialogSuccessToast("Länk kopierad!");
+            }
         } catch {
             if (currentId !== id) return;
             copyStatus.textContent = "Markera och kopiera länken nedan.";

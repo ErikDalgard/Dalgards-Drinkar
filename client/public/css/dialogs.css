@@ -68,8 +68,9 @@
 
 .modal #modal-theme {
   border: 0;
-  font-size: 0.7rem;
-  padding: 0.35rem 0.65rem;
+  min-height: 44px;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.8rem;
 }
 
 .modal #modal-theme[hidden] {
@@ -100,10 +101,6 @@
     font-size: 1.2rem;
   }
 
-  .modal #modal-theme {
-    font-size: 0.9rem;
-    padding: 0.45rem 0.8rem;
-  }
 }
 
 

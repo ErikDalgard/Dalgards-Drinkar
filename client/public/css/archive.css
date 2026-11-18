@@ -617,27 +617,50 @@
     min-width: 0;
   }
 
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
   .card-media {
     aspect-ratio: 6/5;
   }
 
   .card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     padding: .7rem .65rem .8rem;
   }
 
   .card-drink {
-    font-size: 1.125rem;
+    font-size: .95rem;
     margin-bottom: .4rem;
   }
 
+  .card-open {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .card-meta {
+    align-items: center;
+    gap: .2rem;
+    margin-top: auto;
+  }
+
   .card .date {
-    font-size: .75rem;
+    font-size: .62rem;
     line-height: 1.2;
   }
 
   .card-theme {
-    padding: .27rem .65rem;
-    font-size: .95rem;
+    padding: .2rem .3rem;
+    font-size: .7rem;
+    font-weight: 500;
   }
 
   .card-play {
