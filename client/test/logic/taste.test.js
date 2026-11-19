@@ -15,3 +15,8 @@ test('taste choices combine with AND and do not exclude unprofiled drinks until 
   assert.equal(matchesTasteFilters('3/5,4/5,0/5,3/5,0/5', new Set(['sour', 'strong'])), false);
   assert.equal(matchesTasteFilters('4/5,0/5,3/5,0/5,0/5', new Set(['sweet', 'bitter'])), true);
 });
+
+test('multiple taste profiles match when any recipe group satisfies every selected filter', () => {
+  assert.equal(matchesTasteFilters('4/5,0/5,0/5,0/5,0/5||0/5,4/5,0/5,4/5,0/5', new Set(['sour', 'strong'])), true);
+  assert.equal(matchesTasteFilters('4/5,0/5,0/5,0/5,0/5||0/5,1/5,0/5,1/5,0/5', new Set(['sour', 'strong'])), false);
+});

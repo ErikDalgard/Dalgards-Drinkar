@@ -11,59 +11,39 @@ export function renderTasteProfile(tasteStr) {
         container.style.display = "none";
         return;
     }
-    const values = tasteStr
-        .split(",")
-        .map((s) => parseInt(s.trim().split("/")[0], 10));
-    TASTE_LABELS.forEach((label, i) => {
-        const value = values[i] || 0;
-        let dots = "";
-        for (let d = 1; d <= 5; d++) {
-            dots += `
-        <span
-          class="taste-dot ${d <= value ? "filled" : ""}"
-        ></span>
-      `;
-        }
-        const row = document.createElement("div");
-        row.className = "taste-row";
-        row.innerHTML = `
-      <span class="taste-label">
-        ${label}
-      </span>
-
-      <span class="taste-dots">
-        ${dots}
-      </span>
-    `;
-        rows.appendChild(row);
-    });
+    appendTasteProfile(rows, tasteStr);
     container.style.display = "block";
 }
 // ============================================
 // Recipe Groups
 // ============================================
-export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw) {
+export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, tasteRaw = "") {
     const container = document.getElementById("recipe-groups");
     container.innerHTML = "";
+    const standaloneTaste = document.getElementById("taste-profile");
+    const standaloneTasteRows = document.getElementById("taste-rows");
+    if (standaloneTaste) {
+        standaloneTaste.style.display = "none";
+        if (standaloneTasteRows) standaloneTasteRows.innerHTML = "";
+    }
     const ingredientGroups = (ingredientsRaw || "")
         .split("||")
-        .map((g) => g.trim())
-        .filter(Boolean);
+        .map((g) => g.trim());
     const stepGroups = (stepsRaw || "")
         .split("||")
-        .map((g) => g.trim())
-        .filter(Boolean);
-    const groupCount = Math.max(ingredientGroups.length, stepGroups.length, 1);
-    const drinkNames = (drinkNameRaw || "")
+        .map((g) => g.trim());
+    const tasteGroups = (tasteRaw || "")
+        .split("||")
+        .map((g) => g.trim());
+    const names = (drinkNameRaw || "")
         .split("&")
         .map((name) => name.trim());
+    const groupCount = Math.max(ingredientGroups.length, stepGroups.length, tasteGroups.filter(Boolean).length, 1);
     for (let i = 0; i < groupCount; i++) {
         if (groupCount > 1) {
             const label = document.createElement("p");
             label.className = "recipe-group-label";
-            label.textContent = drinkNames[i]
-                ? `${drinkNames[i]}`
-                : `Recept ${i + 1}`;
+            label.textContent = names[i] || `Drink ${i + 1}`;
             container.appendChild(label);
         }
         const ingredients = (ingredientGroups[i] || "").split(";").map((s) => s.trim()).filter(Boolean);
@@ -74,7 +54,41 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw) {
         if (steps.length) {
             container.appendChild(makeRecipeSection("Gör så här", steps, true));
         }
+        if (tasteGroups[i]) {
+            appendTasteProfile(container, tasteGroups[i], true);
+        }
     }
+}
+
+function appendTasteProfile(container, tasteStr, grouped = false) {
+    const profileContainer = document.createElement("section");
+    profileContainer.className = "taste-profile recipe-taste-profile";
+    if (grouped) profileContainer.setAttribute("aria-label", "Smakprofil");
+    const heading = document.createElement("p");
+    heading.className = "recipe-heading";
+    heading.textContent = "Smakprofil";
+    profileContainer.appendChild(heading);
+    const rows = document.createElement("div");
+    rows.className = "taste-rows";
+    const values = tasteStr
+        .split(",")
+        .map((s) => parseInt(s.trim().split("/")[0], 10));
+    TASTE_LABELS.forEach((label, i) => {
+        const value = values[i] || 0;
+        let dots = "";
+        for (let d = 1; d <= 5; d++) {
+            dots += `<span class="taste-dot ${d <= value ? "filled" : ""}"></span>`;
+        }
+        const row = document.createElement("div");
+        row.className = "taste-row";
+        row.innerHTML = `
+          <span class="taste-label">${label}</span>
+          <span class="taste-dots">${dots}</span>
+        `;
+        rows.appendChild(row);
+    });
+    profileContainer.appendChild(rows);
+    container.appendChild(profileContainer);
 }
 
 function makeRecipeSection(title, items, ordered) {

@@ -17,9 +17,11 @@ export function parseTasteProfile(value) {
 
 export function matchesTasteFilters(value, selectedIds) {
     if (!selectedIds.size) return true;
-    const profile = parseTasteProfile(value);
-    return profile !== null && [...selectedIds].every((id) => {
-        const filter = TASTE_FILTERS.find((item) => item.id === id);
-        return filter && profile[filter.index] >= filter.min;
+    return String(value || "").split("||").some((group) => {
+        const profile = parseTasteProfile(group);
+        return profile !== null && [...selectedIds].every((id) => {
+            const filter = TASTE_FILTERS.find((item) => item.id === id);
+            return filter && profile[filter.index] >= filter.min;
+        });
     });
 }

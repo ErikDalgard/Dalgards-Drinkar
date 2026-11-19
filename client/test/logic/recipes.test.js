@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
-import { renderRecipeGroups } from '../../public/js/recipes.js';
+import { renderRecipeGroups, renderTasteProfile } from '../../public/js/recipes.js';
 
 function withRecipe(callback) {
   const dom = new JSDOM('<div id="recipe-groups"></div>');
@@ -31,3 +31,27 @@ test('unnamed opening items remain visible and headings render as text', () => w
   assert.equal(document.querySelectorAll('img').length, 0);
   assert.equal(document.querySelectorAll('ol').length, 0);
 }));
+
+test('multiple taste profiles render after their matching drink', () => {
+  const dom = new JSDOM(`
+    <div id="recipe-groups"></div>
+    <div id="modal-drink" style="display:none">Gin Sour & Vodka Sour</div>
+    <div id="taste-profile">
+      <div id="taste-rows"></div>
+    </div>
+  `);
+  globalThis.document = dom.window.document;
+  try {
+    renderRecipeGroups(
+      '4 cl gin;citron||4 cl vodka;citron',
+      'Skaka;Sila||Skaka;Sila',
+      'Gin Sour & Vodka Sour',
+      '3/5,4/5,0/5,4/5,0/5||4/5,2/5,0/5,3/5,0/5',
+    );
+    assert.deepEqual([...document.querySelectorAll('.recipe-group-label')].map(el => el.textContent), ['Gin Sour', 'Vodka Sour']);
+    assert.equal(document.querySelectorAll('.recipe-taste-profile').length, 2);
+  } finally {
+    delete globalThis.document;
+    dom.window.close();
+  }
+});

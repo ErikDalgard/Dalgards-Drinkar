@@ -1,8 +1,9 @@
 // Keep semicolon-separated API fields; an explicit "# " prefix marks a heading.
-function createRecipeFields(kind, label, multiline) {
-  const container = document.getElementById(`f-${kind}`);
-  const addButton = document.getElementById(`add-${kind}`);
-  const headingButton = document.getElementById(`add-${kind}-heading`);
+function createRecipeFields(kind, label, multiline, options = {}) {
+  const container = options.container || document.getElementById(`f-${kind}`);
+  const addButton = options.addButton || document.getElementById(`add-${kind}`);
+  const headingButton = options.headingButton || document.getElementById(`add-${kind}-heading`);
+  const idPrefix = options.idPrefix || `recipe-${kind}`;
   let nextId = 0;
 
   function updateLabels() {
@@ -24,7 +25,7 @@ function createRecipeFields(kind, label, multiline) {
     header.className = "admin-recipe-row-header";
     const rowLabel = document.createElement("label");
     const input = document.createElement(multiline ? "textarea" : "input");
-    input.id = `recipe-${kind}-${nextId++}`;
+    input.id = `${idPrefix}-${nextId++}`;
     rowLabel.htmlFor = input.id;
     input.className = "admin-recipe-value";
     if (!multiline) input.type = "text";
@@ -54,6 +55,11 @@ function createRecipeFields(kind, label, multiline) {
     remove.type = "button";
     remove.className = "admin-recipe-remove";
     remove.textContent = "Ta bort";
+    remove.setAttribute("aria-label", `Ta bort ${rowLabel.textContent.toLowerCase()}`);
+    remove.hidden = !input.value.trim();
+    input.addEventListener("input", () => {
+      remove.hidden = !input.value.trim();
+    });
     remove.addEventListener("click", () => {
       const rows = [...container.children];
       const index = rows.indexOf(row);
@@ -94,3 +100,4 @@ function createRecipeFields(kind, label, multiline) {
   setValue("");
   return { setValue, getValue };
 }
+window.createRecipeFields = createRecipeFields;
