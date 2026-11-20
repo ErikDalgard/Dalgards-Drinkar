@@ -1,0 +1,19 @@
+{
+  "name": "Dalgards Drinkar - Urkällan",
+  "short_name": "Urkällan",
+  "icons": [
+    {
+      "src": "/public/assets/icons/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/public/assets/icons/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#c89a67",
+  "background_color": "#fff8ef",
+  "display": "standalone"
+}
