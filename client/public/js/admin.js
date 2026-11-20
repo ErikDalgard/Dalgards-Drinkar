@@ -1,8 +1,9 @@
 import { populateSearchSuggestion } from "./search-suggestions.js";
 import { createUnsavedChanges } from "./admin-unsaved.js";
-import { createTasteFields } from "./admin-taste-fields.js";
 import { createSpiritEditor } from "./admin-spirits.js";
 import { createAdminPreview } from "./admin-preview.js";
+import { createDrinkVariants } from "./admin-variants.js?v=20261119";
+import { createTasteFields } from "./admin-taste-fields.js";
 
 // ============================================
 // Configuration & State
@@ -16,9 +17,10 @@ let toastTimeout = null;
 let statusTimeout = null;
 let isSaving = false;
 
-const ingredientFields = createRecipeFields("ingredients", "Ingrediens", false);
-const stepFields = createRecipeFields("steps", "Steg", true);
+const ingredientFields = window.createRecipeFields("ingredients", "Ingrediens", false);
+const stepFields = window.createRecipeFields("steps", "Steg", true);
 const tasteFields = createTasteFields();
+const drinkVariants = createDrinkVariants();
 const preview = createAdminPreview();
 const drinkForm = document.getElementById("drink-form");
 const spiritsForm = document.getElementById("spirits-form");
@@ -29,18 +31,27 @@ const spiritEditor = createSpiritEditor(() => adminKey, showToast, (clean = fals
 const unsavedChanges = createUnsavedChanges([drinkForm, spiritsForm], () => isSaving || spiritEditor.isSaving());
 
 function collectDrink() {
+  const primaryIngredients = ingredientFields.getValue();
+  const primarySteps = stepFields.getValue();
+  const primaryTaste = tasteFields.getValue();
+  const variants = drinkVariants.getValue();
+  const names = [document.getElementById("f-drink").value.trim(), ...variants.names];
+  const ingredients = [primaryIngredients, ...variants.ingredients];
+  const steps = [primarySteps, ...variants.steps];
+  const tastes = [primaryTaste, ...variants.tastes];
   return {
     date: document.getElementById("f-date").value.trim(),
-    drink: document.getElementById("f-drink").value.trim(),
+    drink: names.join(" & "),
     theme: document.getElementById("f-theme").value.trim() || "Övrigt",
     note: document.getElementById("f-note").value,
-    ingredients: ingredientFields.getValue(),
-    steps: stepFields.getValue(),
-    taste: tasteFields.getValue(),
+    ingredients: ingredients.join("||"),
+    steps: steps.join("||"),
+    taste: tastes.join("||"),
     url: document.getElementById("f-video-url").value,
     photo: document.getElementById("f-photo-url").value,
   };
 }
+
 function updateFormActions() {
   unsavedChanges.refresh();
   const missing = validateForm();
@@ -312,6 +323,7 @@ function clearForm() {
   ingredientFields.setValue("");
   stepFields.setValue("");
   tasteFields.setValue("");
+  drinkVariants.setValue({});
   [
     "f-date",
     "f-drink",
@@ -340,12 +352,17 @@ function fillForm(d) {
   preview.close();
   document.getElementById("f-id").value = d.id;
   document.getElementById("f-date").value = d.date;
-  document.getElementById("f-drink").value = d.drink;
+  const drinkNames = String(d.drink || "").split("&").map((value) => value.trim());
+  document.getElementById("f-drink").value = drinkNames[0] || "";
   document.getElementById("f-theme").value = d.theme;
   document.getElementById("f-note").value = d.note;
-  ingredientFields.setValue(d.ingredients);
-  stepFields.setValue(d.steps);
-  tasteFields.setValue(d.taste);
+  const ingredientGroups = String(d.ingredients || "").split("||").map((value) => value.trim());
+  const stepGroups = String(d.steps || "").split("||").map((value) => value.trim());
+  ingredientFields.setValue(ingredientGroups[0] || "");
+  stepFields.setValue(stepGroups[0] || "");
+  const tasteGroups = String(d.taste || "").split("||").map((value) => value.trim());
+  tasteFields.setValue(tasteGroups[0] || "");
+  drinkVariants.setValue(d);
   document.getElementById("f-video-url").value = d.url;
   document.getElementById("f-photo-url").value = d.photo;
 
@@ -410,6 +427,7 @@ function validateForm() {
 
   const missing = [];
   if (!tasteFields.isComplete()) missing.push("Smakprofil – välj alla fem värden eller rensa profilen");
+  if (!drinkVariants.isComplete()) missing.push("Ytterligare drink – ange namn och lägg till en hel smakprofil eller rensa den");
 
   if (!date) missing.push("Datum");
   if (!drink) missing.push("Drinknamn");

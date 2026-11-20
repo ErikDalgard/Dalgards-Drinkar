@@ -55,10 +55,10 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
         document.getElementById("modal-note").textContent =
             v.note;
         const hasRecipe = !!((v.ingredients && v.ingredients.trim()) ||
-            (v.steps && v.steps.trim()));
+            (v.steps && v.steps.trim()) ||
+            (v.taste && v.taste.trim()));
         document.getElementById("recipe-block").style.display = hasRecipe ? "block" : "none";
-        renderRecipeGroups(v.ingredients, v.steps, v.drink);
-        renderTasteProfile(v.taste);
+        renderRecipeGroups(v.ingredients, v.steps, v.drink, v.taste);
         renderSpiritLinks(v.ingredients, (spirit) => {
             closeModal();
             onSpiritSelect(spirit);

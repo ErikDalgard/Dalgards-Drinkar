@@ -1,9 +1,10 @@
 import { TASTE_LABELS, parseTasteProfile } from "./taste.js";
 
-export function createTasteFields() {
-  const container = document.getElementById("admin-taste-rows");
-  const hint = document.getElementById("admin-taste-hint");
-  const clear = document.getElementById("admin-taste-clear");
+export function createTasteFields(options = {}) {
+  const container = options.container || document.getElementById("admin-taste-rows");
+  const hint = options.hint || document.getElementById("admin-taste-hint");
+  const clear = options.clear || document.getElementById("admin-taste-clear");
+  const namePrefix = options.namePrefix || "taste";
   let values = Array(5).fill(null);
   let originalUnparsed = "";
 
@@ -31,7 +32,7 @@ export function createTasteFields() {
       option.className = "admin-taste-choice";
       const input = document.createElement("input");
       input.type = "radio";
-      input.name = `taste-${index}`;
+      input.name = `${namePrefix}-${index}`;
       input.value = String(value);
       input.dataset.index = String(index);
       input.setAttribute("aria-label", `${label}: ${value} av 5`);

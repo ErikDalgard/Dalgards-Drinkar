@@ -55,7 +55,7 @@
         <label for="f-date" class="required-label">Datum</label>
         <input type="text" id="f-date" placeholder="ÅÅÅÅ-MM-DD" required>
       </div>
-      <div class="filter-group">
+      <div id="f-drink-slot" class="filter-group">
         <label for="f-drink" class="required-label">Drinknamn</label>
         <input type="text" id="f-drink" required>
       </div>
@@ -87,8 +87,12 @@
         <legend>Smakprofil</legend>
         <p id="admin-taste-hint" role="status" aria-live="polite"></p>
         <div id="admin-taste-rows" class="admin-taste-rows"></div>
-        <button type="button" id="admin-taste-clear" class="admin-recipe-remove" disabled>Rensa smakprofil</button>
+        <button type="button" id="admin-taste-clear" class="admin-recipe-remove admin-action-remove" aria-label="Rensa smakprofil" disabled>Rensa smakprofil</button>
       </fieldset>
+      <div id="admin-variants" class="admin-variants full-width"></div>
+      <button type="button" id="add-drink-variant" class="admin-recipe-add full-width">
+        + Lägg till ytterligare drink på samma kort
+      </button>
 
         <div class="filter-group">
         <label class="required-label">Video</label>
@@ -189,6 +193,6 @@
 
 <script src="public/js/config.js"></script>
 <script src="public/js/admin-recipe-fields.js"></script>
-<script type="module" src="public/js/admin.js"></script>
+<script type="module" src="public/js/admin.js?v=20261119"></script>
 </body>
 </html>

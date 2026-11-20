@@ -59,8 +59,9 @@ export function createSpiritEditor(getKey, showToast, onStateChange = () => {}) 
     words.placeholder = "whiskey\nbourbon\nscotch";
     const remove = document.createElement("button");
     remove.type = "button";
-    remove.className = "admin-recipe-remove";
+    remove.className = "admin-recipe-remove admin-action-remove";
     remove.textContent = "Ta bort spritsort";
+    remove.setAttribute("aria-label", `Ta bort spritsort ${item.name}`);
     remove.addEventListener("click", () => {
       row.remove();
       changed();
