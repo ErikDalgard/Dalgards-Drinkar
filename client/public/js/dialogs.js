@@ -59,9 +59,6 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
             (v.taste && v.taste.trim()));
         document.getElementById("recipe-block").style.display = hasRecipe ? "block" : "none";
         renderRecipeGroups(v.ingredients, v.steps, v.drink, v.taste);
-        if (v.taste) {
-            document.getElementById("taste-profile").style.display = "none";
-        }
         renderSpiritLinks(v.ingredients, (spirit) => {
             closeModal();
             onSpiritSelect(spirit);

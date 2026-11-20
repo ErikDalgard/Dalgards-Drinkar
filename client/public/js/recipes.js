@@ -6,12 +6,29 @@ import { TASTE_LABELS } from "./taste.js";
 export function renderTasteProfile(tasteStr) {
     const container = document.getElementById("taste-profile");
     const rows = document.getElementById("taste-rows");
+    if (!container || !rows) return;
     rows.innerHTML = "";
     if (!tasteStr) {
         container.style.display = "none";
         return;
     }
-    appendTasteProfile(rows, tasteStr);
+    const values = String(tasteStr)
+        .split(",")
+        .map((s) => parseInt(s.trim().split("/")[0], 10));
+    TASTE_LABELS.forEach((label, i) => {
+        const value = values[i] || 0;
+        let dots = "";
+        for (let d = 1; d <= 5; d++) {
+            dots += `<span class="taste-dot ${d <= value ? "filled" : ""}"></span>`;
+        }
+        const row = document.createElement("div");
+        row.className = "taste-row";
+        row.innerHTML = `
+          <span class="taste-label">${label}</span>
+          <span class="taste-dots">${dots}</span>
+        `;
+        rows.appendChild(row);
+    });
     container.style.display = "block";
 }
 // ============================================
@@ -23,7 +40,6 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
     const standaloneTaste = document.getElementById("taste-profile");
     const standaloneTasteRows = document.getElementById("taste-rows");
     if (standaloneTaste) {
-        standaloneTaste.style.display = "none";
         if (standaloneTasteRows) standaloneTasteRows.innerHTML = "";
     }
     const ingredientGroups = (ingredientsRaw || "")
@@ -39,6 +55,11 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
         .split("&")
         .map((name) => name.trim());
     const groupCount = Math.max(ingredientGroups.length, stepGroups.length, tasteGroups.filter(Boolean).length, 1);
+    if (groupCount === 1) {
+        if (standaloneTaste) renderTasteProfile(tasteRaw);
+    } else if (standaloneTaste) {
+        standaloneTaste.style.display = "none";
+    }
     for (let i = 0; i < groupCount; i++) {
         if (groupCount > 1) {
             const label = document.createElement("p");
@@ -54,7 +75,7 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
         if (steps.length) {
             container.appendChild(makeRecipeSection("Gör så här", steps, true));
         }
-        if (tasteGroups[i]) {
+        if (groupCount > 1 && tasteGroups[i]) {
             appendTasteProfile(container, tasteGroups[i], true);
         }
     }
