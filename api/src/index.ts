@@ -107,13 +107,21 @@ export default {
         });
       }
       const body: any = await request.json();
+      const servings = normalizeServings(body.servings);
+      if (servings === null) {
+        return Response.json({ error: "Portionsantal måste vara positiva heltal." }, {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+      const storedServings = serializeServings(servings);
       const result = await env.DB.prepare(
-        `INSERT INTO drinks (date, theme, drink, video_url, photo_url, note, ingredients, steps, taste)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO drinks (date, theme, drink, video_url, photo_url, note, ingredients, steps, taste, servings)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       ).bind(
         body.date, body.theme || "", body.drink, body.url,
         body.photo || "", body.note || "", body.ingredients || "",
-        body.steps || "", body.taste || ""
+        body.steps || "", body.taste || "", storedServings
       ).run();
 
       console.log("Drink created:", {
@@ -140,13 +148,22 @@ export default {
       const body: any = await request.json();
       const previous = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
         .bind(id).first();
+      const previousServings = parseStoredServings(previous?.servings ?? 1);
+      const servings = normalizeServings(body.servings, previousServings);
+      if (servings === null) {
+        return Response.json({ error: "Portionsantal måste vara positiva heltal." }, {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+      const storedServings = serializeServings(servings);
       await env.DB.prepare(
         `UPDATE drinks SET date=?, theme=?, drink=?, video_url=?, photo_url=?,
-         note=?, ingredients=?, steps=?, taste=? WHERE id=?`
+         note=?, ingredients=?, steps=?, taste=?, servings=? WHERE id=?`
       ).bind(
         body.date, body.theme || "", body.drink, body.url,
         body.photo || "", body.note || "", body.ingredients || "",
-        body.steps || "", body.taste || "", id
+        body.steps || "", body.taste || "", storedServings, id
       ).run();
 
       const updated = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
@@ -162,6 +179,7 @@ export default {
           ["ingredients", "ingredients", body.ingredients || ""],
           ["steps", "steps", body.steps || ""],
           ["taste", "taste", body.taste || ""],
+          ["servings", "servings", storedServings],
         ] as const;
         const changes = Object.fromEntries(fields
           .filter(([column, , value]) => previous?.[column] !== value)
@@ -461,7 +479,40 @@ function rowToDrink(row: any) {
     ingredients: row.ingredients || "",
     steps: row.steps || "",
     taste: row.taste || "",
+    servings: row.servings == null ? 1 : parseStoredServings(row.servings),
   };
+}
+
+type Servings = number | number[];
+
+function normalizeServings(value: unknown, fallback: Servings = 1): Servings | null {
+  if (value === undefined) return fallback;
+  if (typeof value === "number" && Number.isSafeInteger(value) && value > 0) return value;
+  if (Array.isArray(value) && value.length > 0 &&
+      value.every((item) => typeof item === "number" && Number.isSafeInteger(item) && item > 0)) {
+    return value;
+  }
+  return null;
+}
+
+function serializeServings(value: Servings): number | string {
+  return Array.isArray(value) ? JSON.stringify(value) : value;
+}
+
+function parseStoredServings(value: unknown): Servings {
+  if (typeof value === "string" && value.startsWith("[")) {
+    const parsed: unknown = JSON.parse(value);
+    const servings = normalizeServings(parsed);
+    if (!Array.isArray(servings)) {
+      throw new Error("Stored drink portions are invalid.");
+    }
+    return servings;
+  }
+  const servings = normalizeServings(typeof value === "string" ? Number(value) : value);
+  if (servings === null) {
+    throw new Error("Stored drink portions are invalid.");
+  }
+  return servings;
 }
 
 type Spirit = { name: string; synonyms: string[] };

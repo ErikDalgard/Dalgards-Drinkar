@@ -5,7 +5,7 @@ const sample = {
   date: "2026-01-02", theme: "Fredag", drink: "Whiskey Sour",
   url: "video.mp4", photo: "photo.jpeg", note: "En fredagsdrink",
   ingredients: "6 cl whiskey;3 cl citronjuice", steps: "Skaka med is;Sila upp",
-  taste: "2/5,3/5,0/5,2/5,0/5",
+  taste: "2/5,3/5,0/5,2/5,0/5", servings: 1,
 };
 function request(path: string, method = "GET", body?: unknown, key?: string) {
   const headers = new Headers();
@@ -23,11 +23,11 @@ async function create(overrides = {}) {
 async function list() {
   const response = await request("/drinks");
   expect(response.status).toBe(200);
-  return response.json<Array<typeof sample & { id: number }>>();
+  return response.json<Array<Omit<typeof sample, "servings"> & { servings: number | number[]; id: number }>>();
 }
 beforeEach(async () => {
   // Test schema matches the columns currently used by the API.
-  await env.DB.exec(`CREATE TABLE IF NOT EXISTS drinks (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, theme TEXT, drink TEXT NOT NULL, video_url TEXT NOT NULL, photo_url TEXT, note TEXT, ingredients TEXT, steps TEXT, taste TEXT)`);
+  await env.DB.exec(`CREATE TABLE IF NOT EXISTS drinks (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, theme TEXT, drink TEXT NOT NULL, video_url TEXT NOT NULL, photo_url TEXT, note TEXT, ingredients TEXT, steps TEXT, taste TEXT, servings INTEGER NOT NULL DEFAULT 1)`);
 });
 
 describe("public API", () => {
@@ -44,7 +44,7 @@ describe("public API", () => {
   it("defaults optional fields to empty strings", async () => {
     const response = await request("/drinks", "POST", { date: sample.date, drink: sample.drink, url: sample.url }, env.ADMIN_KEY);
     expect(response.status).toBe(201); await response.json();
-    expect((await list())[0]).toMatchObject({ theme: "", photo: "", note: "", ingredients: "", steps: "", taste: "" });
+    expect((await list())[0]).toMatchObject({ theme: "", photo: "", note: "", ingredients: "", steps: "", taste: "", servings: 1 });
   });
   it("returns 404 for unknown routes", async () => {
     const response = await request("/does-not-exist");
@@ -95,6 +95,34 @@ describe("drink lifecycle", () => {
   it("deletes a drink even if its media is already absent", async () => {
     const id = await create(); const response = await request(`/drinks/${id}`, "DELETE", undefined, env.ADMIN_KEY);
     expect(response.status).toBe(200); await response.json(); expect(await list()).toEqual([]);
+  });
+  it("persists the recipe's base servings and keeps them when an older client omits the field", async () => {
+    const id = await create({ servings: 3 });
+    expect(await list()).toEqual([{ ...sample, servings: 3, id }]);
+    const { servings: _servings, ...legacyPayload } = sample;
+    const updated = await request(`/drinks/${id}`, "PUT", { ...legacyPayload, drink: "Updated Sour" }, env.ADMIN_KEY);
+    expect(updated.status).toBe(200);
+    await updated.json();
+    expect(await list()).toEqual([{ ...sample, drink: "Updated Sour", servings: 3, id }]);
+  });
+  it("persists separate servings for each drink variant", async () => {
+    const variants = {
+      drink: "Whiskey Sour & Vodka Sour",
+      ingredients: "6 cl whiskey||4 cl vodka",
+      steps: "Skaka||Rör",
+      servings: [2, 4],
+    };
+    const id = await create(variants);
+    expect(await list()).toEqual([{ ...sample, ...variants, id }]);
+    const { servings: _servings, ...legacyPayload } = sample;
+    await request(`/drinks/${id}`, "PUT", { ...legacyPayload, drink: variants.drink }, env.ADMIN_KEY);
+    expect(await list()).toEqual([{ ...sample, ...variants, id }]);
+  });
+  it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, "2", [], [1, 0], [1, 1.5]])("rejects invalid servings %j", async (servings) => {
+    const response = await request("/drinks", "POST", { ...sample, servings }, env.ADMIN_KEY);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toHaveProperty("error");
+    expect(await list()).toEqual([]);
   });
   it("returns 404 for nonexistent drinks without removing other media", async () => {
     await env.MEDIA.put("keep.jpeg", "keep");

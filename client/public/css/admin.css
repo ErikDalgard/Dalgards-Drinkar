@@ -420,6 +420,23 @@
   font-weight: 600;
 }
 
+.admin-recipe-fields legend.admin-recipe-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.admin-recipe-legend .recipe-portions {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.admin-recipe-legend .recipe-portions input {
+  font-size: 1rem;
+}
+
 .admin-recipe-rows {
   display: grid;
   gap: 1rem;

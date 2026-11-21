@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
-import { renderRecipeGroups, renderTasteProfile } from '../../public/js/recipes.js';
+import { renderRecipeGroups, renderTasteProfile, scaleIngredientQuantity } from '../../public/js/recipes.js';
 
 function withRecipe(callback) {
   const dom = new JSDOM('<div id="recipe-groups"></div>');
@@ -24,6 +24,62 @@ test('plain recipes and legacy multiple recipes still render normally', () => wi
   assert.deepEqual([...document.querySelectorAll('.recipe-group-label')].map(el => el.textContent), ['Gin', 'Vodka']);
   assert.equal(document.querySelectorAll('li').length, 6);
 }));
+test('scales leading ingredient quantities while preserving unmeasured text and recipe steps', () => withRecipe(document => {
+  renderRecipeGroups(
+    '5 cl gin;1½ dl syrup;1-2 cl lime;toppa med sodavatten',
+    'Rör med 1 isbit;toppa med sodavatten',
+    'Testdrink',
+    '',
+    1,
+    4,
+  );
+  assert.deepEqual([...document.querySelectorAll('.recipe-ingredients li')].map(el => el.textContent), [
+    '20 cl gin',
+    '6 dl syrup',
+    '4-8 cl lime',
+    'toppa med sodavatten',
+  ]);
+  assert.deepEqual([...document.querySelectorAll('.recipe-steps li')].map(el => el.textContent), [
+    'Rör med 1 isbit',
+    'toppa med sodavatten',
+  ]);
+}));
+test('scales each drink group using its own portions counter value', () => withRecipe(document => {
+  renderRecipeGroups(
+    '6 cl gin||4 cl vodka',
+    'Rör||Skaka',
+    'Gin & Vodka',
+    '',
+    2,
+    [6, 4],
+  );
+  assert.deepEqual([...document.querySelectorAll('.recipe-ingredients li')].map(el => el.textContent), [
+    '18 cl gin',
+    '8 cl vodka',
+  ]);
+}));
+test('uses each drink variant’s own saved serving baseline', () => withRecipe(document => {
+  renderRecipeGroups(
+    '6 cl gin||4 cl vodka',
+    'Rör||Skaka',
+    'Gin & Vodka',
+    '',
+    [2, 4],
+    [6, 8],
+  );
+  assert.deepEqual([...document.querySelectorAll('.recipe-ingredients li')].map(el => el.textContent), [
+    '18 cl gin',
+    '8 cl vodka',
+  ]);
+}));
+test('supports decimal and fraction quantities and leaves quantities intact at the recipe baseline', () => {
+  assert.equal(scaleIngredientQuantity('0,5 dl juice', 2), '1 dl juice');
+  assert.equal(scaleIngredientQuantity('1/2 lime', 4), '2 lime');
+  assert.equal(scaleIngredientQuantity('1 1/2 cl syrup', 2), '3 cl syrup');
+  assert.equal(scaleIngredientQuantity('6 cl gin', 0.5), '3 cl gin');
+  assert.equal(scaleIngredientQuantity('½ dl juice', 1), '½ dl juice');
+  assert.equal(scaleIngredientQuantity('Toppas med soda', 4), 'Toppas med soda');
+});
 test('unnamed opening items remain visible and headings render as text', () => withRecipe(document => {
   renderRecipeGroups('citron;# <img src=x onerror=alert(1)>;vatten', '# Förberedelser', 'Test');
   assert.deepEqual([...document.querySelectorAll('ul li')].map(el => el.textContent), ['citron', 'vatten']);

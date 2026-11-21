@@ -3,6 +3,55 @@ import { hashHue } from "./utils.js";
 
 import { TASTE_LABELS } from "./taste.js";
 
+const FRACTIONS = {
+    "¼": 0.25,
+    "½": 0.5,
+    "¾": 0.75,
+    "⅓": 1 / 3,
+    "⅔": 2 / 3,
+    "⅛": 0.125,
+    "⅜": 0.375,
+    "⅝": 0.625,
+    "⅞": 0.875,
+};
+const QUANTITY_TOKEN = String.raw`(?:\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:[.,]\d+)?[¼½¾⅓⅔⅛⅜⅝⅞]?|[¼½¾⅓⅔⅛⅜⅝⅞])`;
+const INGREDIENT_QUANTITY_PATTERN = new RegExp(
+    `^(\\s*)(${QUANTITY_TOKEN})(?:\\s*([-–])\\s*(${QUANTITY_TOKEN}))?(\\s+)(.*)$`,
+    "u",
+);
+
+function parseQuantity(value) {
+    const mixed = value.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+    if (mixed) return Number(mixed[1]) + Number(mixed[2]) / Number(mixed[3]);
+    const fraction = value.match(/^(\d+)\/(\d+)$/);
+    if (fraction) return Number(fraction[1]) / Number(fraction[2]);
+    const wholeAndFraction = value.match(/^(\d+(?:[.,]\d+)?)([¼½¾⅓⅔⅛⅜⅝⅞])$/);
+    if (wholeAndFraction) return Number(wholeAndFraction[1].replace(",", ".")) + FRACTIONS[wholeAndFraction[2]];
+    if (FRACTIONS[value] !== undefined) return FRACTIONS[value];
+    return Number(value.replace(",", "."));
+}
+
+function formatQuantity(value) {
+    const rounded = Math.round(value * 1000) / 1000;
+    return new Intl.NumberFormat("sv-SE", {
+        maximumFractionDigits: 3,
+        useGrouping: false,
+    }).format(rounded);
+}
+
+export function scaleIngredientQuantity(ingredient, factor) {
+    if (!Number.isFinite(factor) || factor <= 0 || factor === 1) return ingredient;
+    const match = ingredient.match(INGREDIENT_QUANTITY_PATTERN);
+    if (!match) return ingredient;
+    const first = parseQuantity(match[2]) * factor;
+    const second = match[4] === undefined ? null : parseQuantity(match[4]) * factor;
+    if (!Number.isFinite(first) || (second !== null && !Number.isFinite(second))) return ingredient;
+    const range = match[4] === undefined
+        ? ""
+        : `${match[3]}${formatQuantity(second)}`;
+    return `${match[1]}${formatQuantity(first)}${range}${match[5]}${match[6]}`;
+}
+
 export function renderTasteProfile(tasteStr) {
     const container = document.getElementById("taste-profile");
     const rows = document.getElementById("taste-rows");
@@ -34,7 +83,7 @@ export function renderTasteProfile(tasteStr) {
 // ============================================
 // Recipe Groups
 // ============================================
-export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, tasteRaw = "") {
+export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, tasteRaw = "", servings = 1, targetServings = servings, portionsControls = []) {
     const container = document.getElementById("recipe-groups");
     container.innerHTML = "";
     const standaloneTaste = document.getElementById("taste-profile");
@@ -67,10 +116,20 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
             label.textContent = names[i] || `Drink ${i + 1}`;
             container.appendChild(label);
         }
-        const ingredients = (ingredientGroups[i] || "").split(";").map((s) => s.trim()).filter(Boolean);
+        const groupServings = Array.isArray(servings) ? servings[i] ?? servings[0] ?? 1 : servings;
+        const groupTargetServings = Array.isArray(targetServings)
+            ? targetServings[i] ?? groupServings
+            : targetServings;
+        const quantityFactor = groupTargetServings / groupServings;
+        const ingredients = (ingredientGroups[i] || "")
+            .split(";")
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .map((ingredient) => scaleIngredientQuantity(ingredient, quantityFactor));
         const steps = (stepGroups[i] || "").split(";").map((s) => s.trim()).filter(Boolean);
         if (ingredients.length) {
-            container.appendChild(makeRecipeSection("Ingredienser", ingredients, false));
+            const control = portionsControls[i] || null;
+            container.appendChild(makeRecipeSection("Ingredienser", ingredients, false, control));
         }
         if (steps.length) {
             container.appendChild(makeRecipeSection("Gör så här", steps, true));
@@ -112,14 +171,21 @@ function appendTasteProfile(container, tasteStr, grouped = false) {
     container.appendChild(profileContainer);
 }
 
-function makeRecipeSection(title, items, ordered) {
+function makeRecipeSection(title, items, ordered, headingAccessory = null) {
     const section = document.createElement("section");
     section.className = `recipe-section ${ordered ? "recipe-method" : "recipe-shopping"}`;
     section.setAttribute("aria-label", title);
     const heading = document.createElement("h3");
     heading.className = "recipe-heading";
     heading.textContent = title;
-    section.appendChild(heading);
+    if (headingAccessory) {
+        const headingRow = document.createElement("div");
+        headingRow.className = "recipe-section-heading-row";
+        headingRow.append(heading, headingAccessory);
+        section.appendChild(headingRow);
+    } else {
+        section.appendChild(heading);
+    }
     const groups = [];
     let current = { title: "", items: [] };
     items.forEach((text) => {
