@@ -8,6 +8,101 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
     let previousBodyOverflow = "";
     let currentDrink = null;
     const favoriteButton = document.getElementById("modal-favorite");
+    let portionCounters = [];
+    function renderCurrentRecipe() {
+        if (!currentDrink) return;
+        const baseServings = portionCounters.map(({ baseServings }) => baseServings);
+        const targetServings = portionCounters.map(({ input, baseServings }) => {
+            const value = Number(input.value);
+            return Number.isSafeInteger(value) && value > 0 ? value : baseServings;
+        });
+        renderRecipeGroups(
+            currentDrink.ingredients,
+            currentDrink.steps,
+            currentDrink.drink,
+            currentDrink.taste,
+            baseServings,
+            targetServings,
+            portionCounters.map(({ control }) => control),
+        );
+        portionCounters.forEach(({ updateButtons }) => updateButtons());
+    }
+    function createPortionCounter(index, drinkName, baseServings) {
+        const control = document.createElement("div");
+        control.className = "recipe-portions";
+        control.setAttribute("role", "group");
+        control.setAttribute("aria-label", `Portioner för ${drinkName}`);
+        const decrease = document.createElement("button");
+        decrease.type = "button";
+        decrease.className = "recipe-portions-button";
+        decrease.textContent = "−";
+        decrease.setAttribute("aria-label", "Minska portioner");
+        const input = document.createElement("input");
+        input.type = "number";
+        input.id = index === 0 ? "modal-servings" : `modal-servings-${index + 1}`;
+        input.min = "1";
+        input.step = "1";
+        input.value = String(baseServings);
+        input.setAttribute("aria-label", "Antal portioner");
+        const unit = document.createElement("span");
+        unit.className = "recipe-portions-unit";
+        unit.textContent = "port";
+        const increase = document.createElement("button");
+        increase.type = "button";
+        increase.className = "recipe-portions-button";
+        increase.textContent = "+";
+        increase.setAttribute("aria-label", "Öka portioner");
+        control.append(decrease, input, unit, increase);
+
+        const updateButtons = () => {
+            const value = Number(input.value);
+            decrease.disabled = value <= 1;
+            increase.disabled = value >= Number.MAX_SAFE_INTEGER;
+        };
+        input.addEventListener("input", () => {
+            const value = Number(input.value);
+            if (Number.isSafeInteger(value) && value > 0) renderCurrentRecipe();
+        });
+        input.addEventListener("change", () => {
+            const value = Number(input.value);
+            input.value = String(Number.isSafeInteger(value) && value > 0 ? value : baseServings);
+            renderCurrentRecipe();
+        });
+        decrease.addEventListener("click", () => {
+            const value = Number(input.value);
+            if (value > 1) {
+                input.value = String(value - 1);
+                renderCurrentRecipe();
+            }
+        });
+        increase.addEventListener("click", () => {
+            const value = Number(input.value);
+            if (Number.isSafeInteger(value) && value < Number.MAX_SAFE_INTEGER) {
+                input.value = String(value + 1);
+                renderCurrentRecipe();
+            }
+        });
+        return { control, input, baseServings, updateButtons };
+    }
+
+    function preparePortionCounters(drink) {
+        const groupCount = Math.max(
+            String(drink.ingredients || "").split("||").length,
+            String(drink.steps || "").split("||").length,
+            String(drink.taste || "").split("||").map((group) => group.trim()).filter(Boolean).length,
+            1,
+        );
+        const names = String(drink.drink || "").split("&").map((name) => name.trim());
+        const servings = Array.isArray(drink.servings) ? drink.servings : [];
+        const legacyServings = Number.isSafeInteger(drink.servings) && drink.servings > 0
+            ? drink.servings : 1;
+        portionCounters = Array.from({ length: groupCount }, (_, index) => {
+            const name = names[index] || `Drink ${index + 1}`;
+            const baseServings = Number.isSafeInteger(servings[index]) && servings[index] > 0
+                ? servings[index] : Array.isArray(drink.servings) ? 1 : legacyServings;
+            return createPortionCounter(index, name, baseServings);
+        });
+    }
     function syncFavoriteButton() {
         if (!currentDrink || !favoriteButton) return;
         const active = isFavorite(currentDrink.id);
@@ -58,7 +153,8 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
             (v.steps && v.steps.trim()) ||
             (v.taste && v.taste.trim()));
         document.getElementById("recipe-block").style.display = hasRecipe ? "block" : "none";
-        renderRecipeGroups(v.ingredients, v.steps, v.drink, v.taste);
+        preparePortionCounters(v);
+        renderCurrentRecipe();
         renderSpiritLinks(v.ingredients, (spirit) => {
             closeModal();
             onSpiritSelect(spirit);

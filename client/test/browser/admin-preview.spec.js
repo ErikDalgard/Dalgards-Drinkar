@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 const savedDrink = {
   id: 42, date: '2026-01-02', drink: 'Test Sour', theme: 'Fredag', note: 'Sparad drink',
   url: 'existing.mp4', photo: 'existing.jpeg', ingredients: '6 cl whiskey;3 cl citronjuice',
-  steps: 'Skaka;Sila', taste: '',
+  steps: 'Skaka;Sila', taste: '', servings: 2,
 };
 let writes;
 test.beforeEach(async ({ page }) => {
@@ -36,6 +36,8 @@ test('required fields gate preview/save; local preview uploads nothing and retai
   await expect(preview).toBeDisabled();
   await page.locator('#f-date').fill('2026-01-02');
   await page.locator('#f-drink').fill('Ny drink');
+  await expect(page.locator('#f-servings')).toHaveValue('1');
+  await page.locator('#f-servings').fill('2');
   await page.locator('#f-photo-file').setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aP1sAAAAASUVORK5CYII=', 'base64') });
   await expect(preview).toBeDisabled();
   await page.locator('#f-video-file').setInputFiles({ name: 'video.mp4', mimeType: 'video/mp4', buffer: Buffer.from('test-video-bytes') });
@@ -74,11 +76,48 @@ test('existing media enables edit preview; saving resets action availability', a
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).not.toBeVisible();
   await page.locator('#f-drink').fill('Edited Sour');
+  await preview.click();
+  await expect(page.locator('#modal-servings')).toHaveValue('2');
+  await page.locator('#modal-servings').fill('4');
+  await expect(page.locator('#recipe-groups')).toContainText('12 cl whiskey');
+  await page.keyboard.press('Escape');
+  await page.locator('#f-servings').fill('4');
   await save.click();
   await expect(page.locator('#submit-btn')).toBeVisible();
   await expect(page.locator('#submit-btn')).toBeDisabled();
   await expect(preview).toBeDisabled();
-  expect(writes).toEqual([{ path: '/drinks/42', body: { ...savedDrink, id: undefined, drink: 'Edited Sour' } }]);
+  expect(writes).toEqual([{ path: '/drinks/42', body: { ...savedDrink, id: undefined, drink: 'Edited Sour', servings: 4 } }]);
+});
+
+test('admin can preview and save a separate servings baseline for each drink', async ({ page }) => {
+  await page.getByRole('button', { name: 'Redigera en drink', exact: true }).click();
+  await page.locator('#edit-search').fill('Test Sour');
+  await page.locator('.edit-search-result').click();
+  await page.locator('#add-drink-variant').click();
+  const variant = page.locator('.admin-variant').first();
+  await variant.locator('.admin-variant-name').fill('Vodka Sour');
+  await variant.locator('.variant-servings').fill('4');
+  await variant.locator('#variant-ingredients-0 input').fill('4 cl vodka');
+  await variant.locator('#variant-steps-0 textarea').fill('Rör');
+
+  await page.locator('#preview-btn').click();
+  await expect(page.locator('#recipe-groups .recipe-shopping')).toHaveCount(2);
+  await expect(page.locator('#recipe-groups .recipe-shopping').nth(0)).toContainText('6 cl whiskey');
+  await expect(page.locator('#recipe-groups .recipe-shopping').nth(1)).toContainText('4 cl vodka');
+  await page.locator('#modal-servings-2').fill('8');
+  await expect(page.locator('#recipe-groups .recipe-shopping').nth(0)).toContainText('6 cl whiskey');
+  await expect(page.locator('#recipe-groups .recipe-shopping').nth(1)).toContainText('8 cl vodka');
+  expect(writes).toEqual([]);
+
+  await page.keyboard.press('Escape');
+  await page.locator('#edit-submit-btn').click();
+  expect(writes).toHaveLength(1);
+  expect(writes[0].body).toMatchObject({
+    drink: 'Test Sour & Vodka Sour',
+    ingredients: '6 cl whiskey;3 cl citronjuice||4 cl vodka',
+    steps: 'Skaka;Sila||Rör',
+    servings: [2, 4],
+  });
 });
 
 test('admin navigation separates views and keeps drafts when visiting filters', async ({ page }) => {

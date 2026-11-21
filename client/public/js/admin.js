@@ -39,11 +39,16 @@ function collectDrink() {
   const ingredients = [primaryIngredients, ...variants.ingredients];
   const steps = [primarySteps, ...variants.steps];
   const tastes = [primaryTaste, ...variants.tastes];
+  const servings = [
+    Number(document.getElementById("f-servings").value),
+    ...variants.servings,
+  ];
   return {
     date: document.getElementById("f-date").value.trim(),
     drink: names.join(" & "),
     theme: document.getElementById("f-theme").value.trim() || "Övrigt",
     note: document.getElementById("f-note").value,
+    servings: servings.length > 1 ? servings : servings[0],
     ingredients: ingredients.join("||"),
     steps: steps.join("||"),
     taste: tastes.join("||"),
@@ -51,6 +56,38 @@ function collectDrink() {
     photo: document.getElementById("f-photo-url").value,
   };
 }
+
+const primaryServings = document.getElementById("f-servings");
+const primaryServingsDecrease = document.getElementById("f-servings-decrease");
+const primaryServingsIncrease = document.getElementById("f-servings-increase");
+function updatePrimaryServingsButtons() {
+  const value = Number(primaryServings.value);
+  primaryServingsDecrease.disabled = value <= 1;
+  primaryServingsIncrease.disabled = value >= Number.MAX_SAFE_INTEGER;
+}
+primaryServings.addEventListener("input", updatePrimaryServingsButtons);
+primaryServings.addEventListener("change", updatePrimaryServingsButtons);
+updatePrimaryServingsButtons();
+primaryServingsDecrease.addEventListener("click", () => {
+  const value = Number(primaryServings.value);
+  if (value > 1) {
+    primaryServings.value = String(value - 1);
+    primaryServings.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+});
+primaryServingsIncrease.addEventListener("click", () => {
+  const value = Number(primaryServings.value);
+  if (Number.isSafeInteger(value) && value < Number.MAX_SAFE_INTEGER) {
+    primaryServings.value = String(value + 1);
+    primaryServings.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+});
+function updatePrimaryServingsLabel() {
+  const drinkName = document.getElementById("f-drink").value.trim() || "första drinken";
+  primaryServings.closest(".recipe-portions").setAttribute("aria-label", `Portioner för ${drinkName}`);
+  primaryServings.setAttribute("aria-label", `Antal portioner för ${drinkName}`);
+}
+document.getElementById("f-drink").addEventListener("input", updatePrimaryServingsLabel);
 
 function updateFormActions() {
   unsavedChanges.refresh();
@@ -329,12 +366,16 @@ function clearForm() {
     "f-drink",
     "f-theme",
     "f-note",
+    "f-servings",
     "f-video-url",
     "f-photo-url",
     "f-id",
   ].forEach((id) => {
     document.getElementById(id).value = "";
   });
+  document.getElementById("f-servings").value = "1";
+  updatePrimaryServingsButtons();
+  updatePrimaryServingsLabel();
 
   document.getElementById("f-video-file").value = "";
   document.getElementById("f-photo-file").value = "";
@@ -354,8 +395,12 @@ function fillForm(d) {
   document.getElementById("f-date").value = d.date;
   const drinkNames = String(d.drink || "").split("&").map((value) => value.trim());
   document.getElementById("f-drink").value = drinkNames[0] || "";
+  updatePrimaryServingsLabel();
   document.getElementById("f-theme").value = d.theme;
   document.getElementById("f-note").value = d.note;
+  const servings = Array.isArray(d.servings) ? d.servings : null;
+  document.getElementById("f-servings").value = String(servings?.[0] ?? d.servings ?? 1);
+  updatePrimaryServingsButtons();
   const ingredientGroups = String(d.ingredients || "").split("||").map((value) => value.trim());
   const stepGroups = String(d.steps || "").split("||").map((value) => value.trim());
   ingredientFields.setValue(ingredientGroups[0] || "");
@@ -426,11 +471,13 @@ function validateForm() {
     document.getElementById("f-photo-url").value.trim();
 
   const missing = [];
+  const servings = Number(document.getElementById("f-servings").value);
   if (!tasteFields.isComplete()) missing.push("Smakprofil – välj alla fem värden eller rensa profilen");
-  if (!drinkVariants.isComplete()) missing.push("Ytterligare drink – ange namn och lägg till en hel smakprofil eller rensa den");
+  if (!drinkVariants.isComplete()) missing.push("Ytterligare drink – ange namn, ett positivt portionsantal och en hel smakprofil eller rensa den");
 
   if (!date) missing.push("Datum");
   if (!drink) missing.push("Drinknamn");
+  if (!Number.isSafeInteger(servings) || servings < 1) missing.push("Portioner (ett positivt heltal) för första drinken");
 
   if (!videoFile && !existingVideo) {
     missing.push("Video");

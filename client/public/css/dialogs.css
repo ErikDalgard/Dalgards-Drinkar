@@ -335,6 +335,7 @@ dialog.modal-backdrop::backdrop {
 
 .modal .recipe-heading {
   margin-top: 1rem;
+  font-size: 0.875rem;
 }
 
 .modal .recipe-section {
@@ -356,6 +357,82 @@ dialog.modal-backdrop::backdrop {
 .modal .recipe-section .recipe-heading {
   margin: 0 0 0.8rem;
   line-height: 1.4;
+}
+
+.recipe-section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.modal .recipe-section-heading-row .recipe-heading {
+  min-width: 0;
+  margin: 0;
+}
+
+.recipe-portions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text);
+  font-family: "Inter",sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.recipe-portions-button {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--leaf);
+  color: var(--surface);
+  font: 1.5rem/1 "Inter",sans-serif;
+  cursor: pointer;
+}
+
+.recipe-portions-button:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+.recipe-portions-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.recipe-portions input {
+  width: 2rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline-offset: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.recipe-portions input::-webkit-inner-spin-button,
+.recipe-portions input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.recipe-portions-unit {
+  margin-left: -0.3rem;
+}
+
+.recipe-portions-button:last-child {
+  margin-left: 0.2rem;
 }
 
 .modal .recipe-section .recipe-ingredients {
@@ -479,9 +556,6 @@ dialog.modal-backdrop::backdrop {
     font-size: 1.6rem;
   }
 
-  .modal .recipe-heading {
-    font-size: 0.875rem;
-  }
 }
 
 @media (max-width:700px) {

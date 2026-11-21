@@ -72,7 +72,15 @@
         <input type="text" id="f-note">
       </div>
       <fieldset class="admin-recipe-fields full-width">
-        <legend>Ingredienser</legend>
+        <legend class="admin-recipe-legend">
+          <span>Ingredienser</span>
+          <span class="recipe-portions" role="group" aria-label="Portioner för första drinken">
+            <button type="button" class="recipe-portions-button" id="f-servings-decrease" aria-label="Minska portioner">−</button>
+            <input type="number" id="f-servings" min="1" step="1" value="1" required aria-label="Antal portioner för första drinken">
+            <span class="recipe-portions-unit">port</span>
+            <button type="button" class="recipe-portions-button" id="f-servings-increase" aria-label="Öka portioner">+</button>
+          </span>
+        </legend>
         <div id="f-ingredients" class="admin-recipe-rows"></div>
         <div class="admin-recipe-actions">
           <button type="button" id="add-ingredients" class="admin-recipe-add">+ Lägg till ingrediens</button>

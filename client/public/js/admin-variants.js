@@ -18,7 +18,15 @@ export function createDrinkVariants() {
         <input type="text" id="variant-name-${id}" class="admin-variant-name" value="">
       </div>
       <fieldset class="admin-recipe-fields full-width">
-        <legend>Ingredienser</legend>
+        <legend class="admin-recipe-legend">
+          <span>Ingredienser</span>
+          <span class="recipe-portions" role="group" aria-label="Portioner för Drink 2">
+            <button type="button" class="recipe-portions-button variant-servings-decrease" aria-label="Minska portioner">−</button>
+            <input type="number" class="variant-servings" min="1" step="1" value="1" required aria-label="Antal portioner för Drink 2">
+            <span class="recipe-portions-unit">port</span>
+            <button type="button" class="recipe-portions-button variant-servings-increase" aria-label="Öka portioner">+</button>
+          </span>
+        </legend>
         <div id="variant-ingredients-${id}" class="admin-recipe-rows"></div>
         <div class="admin-recipe-actions">
           <button type="button" class="admin-recipe-add variant-add-ingredient">+ Lägg till ingrediens</button>
@@ -43,6 +51,34 @@ export function createDrinkVariants() {
     container.appendChild(variant);
     const name = variant.querySelector(".admin-variant-name");
     name.value = values.name || "";
+    const servings = variant.querySelector(".variant-servings");
+    servings.value = String(values.servings ?? 1);
+    const servingsControl = servings.closest(".recipe-portions");
+    const decreaseServings = servingsControl.querySelector(".variant-servings-decrease");
+    const increaseServings = servingsControl.querySelector(".variant-servings-increase");
+    const updateServingsButtons = () => {
+      const value = Number(servings.value);
+      decreaseServings.disabled = value <= 1;
+      increaseServings.disabled = value >= Number.MAX_SAFE_INTEGER;
+    };
+    servings.addEventListener("input", updateServingsButtons);
+    servings.addEventListener("change", updateServingsButtons);
+    decreaseServings.addEventListener("click", () => {
+      const value = Number(servings.value);
+      if (value > 1) {
+        servings.value = String(value - 1);
+        servings.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+    increaseServings.addEventListener("click", () => {
+      const value = Number(servings.value);
+      if (Number.isSafeInteger(value) && value < Number.MAX_SAFE_INTEGER) {
+        servings.value = String(value + 1);
+        servings.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+    name.addEventListener("input", updateVariantLabels);
+    updateServingsButtons();
     const ingredients = createVariantRecipeFields(
       variant,
       "ingredients",
@@ -102,21 +138,27 @@ export function createDrinkVariants() {
         "aria-label",
         `Ta bort Drink ${drinkNumber}`,
       );
+      const drinkName = variant.querySelector(".admin-variant-name").value.trim() || `Drink ${drinkNumber}`;
+      const servingsControl = variant.querySelector(".variant-servings").closest(".recipe-portions");
+      servingsControl.setAttribute("aria-label", `Portioner för ${drinkName}`);
+      variant.querySelector(".variant-servings").setAttribute("aria-label", `Antal portioner för ${drinkName}`);
     });
   }
 
-  function setValue({ drink, ingredients, steps, taste }) {
+  function setValue({ drink, ingredients, steps, taste, servings }) {
     container.replaceChildren();
     const names = String(drink || "").split("&").map((value) => value.trim());
     const ingredientGroups = String(ingredients || "").split("||").map((value) => value.trim());
     const stepGroups = String(steps || "").split("||").map((value) => value.trim());
     const tasteGroups = String(taste || "").split("||").map((value) => value.trim());
+    const servingsGroups = Array.isArray(servings) ? servings : names.map(() => servings ?? 1);
     for (let index = 1; index < names.length; index++) {
       addVariant({
         name: names[index] || "",
         ingredients: ingredientGroups[index] || "",
         steps: stepGroups[index] || "",
         taste: tasteGroups[index] || "",
+        servings: servingsGroups[index] ?? servingsGroups[0] ?? 1,
       });
     }
   }
@@ -128,13 +170,16 @@ export function createDrinkVariants() {
       ingredients: variants.map((variant) => variant._variantData.ingredients.getValue()),
       steps: variants.map((variant) => variant._variantData.steps.getValue()),
       tastes: variants.map((variant) => variant._variantData.taste.getValue()),
+      servings: variants.map((variant) => Number(variant.querySelector(".variant-servings").value)),
     };
   }
 
   function isComplete() {
     return [...container.children].every((variant) =>
       variant._variantData.name.value.trim() &&
-      variant._variantData.taste.isComplete()
+      variant._variantData.taste.isComplete() &&
+      Number.isSafeInteger(Number(variant.querySelector(".variant-servings").value)) &&
+      Number(variant.querySelector(".variant-servings").value) > 0
     );
   }
 
