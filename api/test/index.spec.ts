@@ -113,10 +113,20 @@ describe("drink lifecycle", () => {
       servings: [2, 4],
     };
     const id = await create(variants);
-    expect(await list()).toEqual([{ ...sample, ...variants, id }]);
-    const { servings: _servings, ...legacyPayload } = sample;
-    await request(`/drinks/${id}`, "PUT", { ...legacyPayload, drink: variants.drink }, env.ADMIN_KEY);
-    expect(await list()).toEqual([{ ...sample, ...variants, id }]);
+    const savedRecipe = { ...sample, ...variants };
+    expect(await list()).toEqual([{ ...savedRecipe, id }]);
+    const { servings: _servings, ...legacyPayload } = savedRecipe;
+    const updated = await request(`/drinks/${id}`, "PUT", {
+      ...legacyPayload,
+      drink: "Updated Whiskey & Vodka Sour",
+    }, env.ADMIN_KEY);
+    expect(updated.status).toBe(200);
+    await updated.json();
+    expect(await list()).toEqual([{
+      ...savedRecipe,
+      drink: "Updated Whiskey & Vodka Sour",
+      id,
+    }]);
   });
   it.each([0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1, "2", [], [1, 0], [1, 1.5]])("rejects invalid servings %j", async (servings) => {
     const response = await request("/drinks", "POST", { ...sample, servings }, env.ADMIN_KEY);
