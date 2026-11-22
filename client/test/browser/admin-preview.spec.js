@@ -48,6 +48,8 @@ test('required fields gate preview/save; local preview uploads nothing and retai
   await preview.click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.locator('#modal-drink')).toHaveText('Ny drink');
+  await expect(page.locator('.admin-preview .detail-panel')).toBeVisible();
+  await expect(page.locator('.admin-preview .detail-hero')).toBeVisible();
   await expect(page.locator('#recipe-groups')).toContainText('6 cl whiskey');
   await expect(page.locator('#recipe-groups')).toContainText('Skaka med is');
   await expect(page.locator('#modal-video')).toHaveAttribute('src', /^blob:/);

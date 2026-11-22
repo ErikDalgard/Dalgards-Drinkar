@@ -651,6 +651,33 @@ textarea.admin-recipe-value {
   margin: 0 2rem 0.65rem 0;
 }
 
+.admin-preview .modal {
+  max-width: 1440px;
+  max-height: calc(100dvh - 4rem);
+  border: 0;
+  background: transparent;
+}
+
+.admin-preview .modal-scroll {
+  display: block;
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+}
+
+.admin-preview .drink-detail {
+  margin: 0 auto;
+}
+
+.admin-preview .detail-media video {
+  max-height: none;
+}
+
+.admin-preview .modal-favorite:disabled,
+.admin-preview .share-drink:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
 .admin-preview #recipe-spirit-links {
   display: none;
 }
@@ -658,6 +685,20 @@ textarea.admin-recipe-value {
 .admin-preview #modal-theme:disabled {
   cursor: default;
   opacity: 1;
+}
+
+@media (max-width:700px) {
+  .admin-preview .modal {
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .admin-preview .modal-scroll {
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .admin-preview .detail-panel {
+    padding-top: 4rem;
+  }
 }
 
 

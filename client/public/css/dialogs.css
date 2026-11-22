@@ -1,4 +1,4 @@
-/* Drink dialog styles. Loaded by styles.css. */
+/* Drink detail and dialog styles. Loaded by styles.css. */
 
 /* Title, theme, date and description */
 
@@ -174,7 +174,587 @@ dialog.modal-backdrop::backdrop {
   overflow-wrap: anywhere;
 }
 
+.drink-detail[hidden] {
+  display: none;
+}
+
+.drink-page-skeleton {
+  display: none;
+  pointer-events: none;
+}
+
+html.drink-page-loading .drink-page-skeleton {
+  display: block;
+}
+
+.drink-page-skeleton .detail-skeleton-back {
+  width: 7rem;
+  height: 2.8rem;
+}
+
+.drink-page-skeleton .detail-skeleton-back .skeleton-line {
+  width: 3rem;
+  height: .8rem;
+}
+
+.detail-skeleton-title,
+.detail-skeleton-note {
+  display: grid;
+  gap: .5rem;
+}
+
+.detail-skeleton-title {
+  width: min(100%, 30rem);
+  margin-bottom: 1.5rem;
+}
+
+.detail-skeleton-title .skeleton-line {
+  height: clamp(2.3rem, 4vw, 4.5rem);
+  border-radius: .5rem;
+}
+
+.detail-skeleton-title .skeleton-line:first-child {
+  width: 90%;
+}
+
+.detail-skeleton-title .skeleton-line:last-child {
+  width: 62%;
+}
+
+.detail-skeleton-note {
+  margin-bottom: 1.5rem;
+}
+
+.detail-skeleton-note .skeleton-line:first-child {
+  width: 96%;
+}
+
+.detail-skeleton-note .skeleton-line:last-child {
+  width: 72%;
+}
+
+.detail-skeleton-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 30rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-skeleton-theme {
+  width: 8rem;
+  height: 2.25rem;
+}
+
+.detail-skeleton-date {
+  width: 6rem;
+}
+
+.detail-skeleton-actions {
+  display: flex;
+  gap: .75rem;
+}
+
+.detail-skeleton-actions .skeleton-line {
+  width: 9rem;
+  height: 2.8rem;
+}
+
+.drink-page-skeleton .detail-skeleton-media {
+  background-color: var(--surface);
+}
+
+.detail-skeleton-recipes {
+  display: grid;
+  max-width: 70rem;
+  gap: 1rem;
+}
+
+.detail-skeleton-group {
+  display: grid;
+  grid-template-columns: minmax(8rem, .35fr) repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 30%, transparent);
+}
+
+.detail-skeleton-heading {
+  grid-column: 1 / -1;
+  width: 60%;
+  height: 1rem;
+}
+
+.detail-skeleton-section {
+  display: grid;
+  align-content: start;
+  gap: .7rem;
+}
+
+.detail-skeleton-section .skeleton-line {
+  height: .9rem;
+}
+
+.detail-skeleton-section .skeleton-line:last-child {
+  width: 68%;
+}
+
 @media (max-width:700px) {
+  .detail-skeleton-group {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detail-skeleton-heading {
+    width: 40%;
+  }
+}
+
+.drink-detail {
+  --detail-panel-gradient: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--bg) 80%, var(--surface) 20%) 0%,
+    color-mix(in srgb, var(--bg) 70%, var(--surface) 30%) 100%
+  );
+  width: 100%;
+  min-width: 0;
+  max-width: 1440px;
+  margin: .75rem auto 2rem;
+  padding: 0 clamp(1.25rem, 4vw, 3.5rem);
+  color: var(--text);
+}
+
+.detail-panel {
+  padding: clamp(1.25rem, 4vw, 3.5rem);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--detail-panel-gradient);
+  color: var(--text);
+}
+
+body.drink-page-active .site-footer {
+  display: none;
+}
+
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  margin: 0 0 .75rem;
+  padding: .55rem 1rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--leaf);
+  color: var(--surface);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.detail-back:hover {
+  filter: brightness(.92);
+}
+
+.detail-back:focus-visible {
+  outline: 3px solid var(--surface);
+  outline-offset: 3px;
+}
+
+.detail-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  grid-template-areas: "copy media";
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.detail-copy {
+  grid-area: copy;
+  min-width: 0;
+}
+
+.detail-media {
+  grid-area: media;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+}
+
+.detail-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  object-fit: cover;
+}
+
+.detail-copy h1 {
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: clamp(2.8rem, 4.7vw, 5rem);
+  font-weight: 600;
+  line-height: .98;
+  overflow-wrap: break-word;
+}
+
+.drink-detail .note {
+  display: block;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  line-height: 1.55;
+}
+
+.drink-detail .note:empty {
+  display: none;
+}
+
+.detail-theme-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: .75rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.drink-detail #modal-theme {
+  display: inline-flex;
+  min-width: 0;
+  flex: 0 1 auto;
+  min-height: 44px;
+  padding: .55rem 1rem;
+  border: 0;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.drink-detail #modal-theme[hidden] {
+  display: none;
+}
+
+.drink-detail #modal-theme:hover {
+  transform: scale(1.05);
+}
+
+.drink-detail .date {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.drink-detail .drink-share {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .75rem;
+  margin: 1.75rem 0 0;
+  color: var(--text);
+}
+
+.drink-detail .modal-favorite,
+.drink-detail .share-drink {
+  justify-content: flex-start;
+  width: auto;
+  min-height: 54px;
+  padding: .6rem .75rem;
+  border-color: var(--leaf);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.drink-detail .modal-favorite {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.drink-detail .share-drink {
+  background: var(--leaf);
+  color: var(--surface);
+}
+
+.drink-detail .modal-favorite svg {
+  color: currentColor;
+}
+
+.drink-detail .share-drink svg {
+  flex: 0 0 auto;
+  color: var(--surface);
+}
+
+.drink-detail .modal-favorite.is-favorite {
+  border-color: var(--leaf);
+  background: var(--leaf);
+  color: var(--surface);
+}
+
+.drink-detail .modal-favorite:hover {
+  filter: brightness(.92);
+}
+
+.drink-detail .modal-favorite.is-favorite svg {
+  color: inherit;
+}
+
+.drink-detail .share-drink:hover {
+  border-color: var(--leaf);
+  background: var(--leaf);
+  color: var(--surface);
+  filter: brightness(.92);
+}
+
+.drink-detail .share-status {
+  flex-basis: 100%;
+  color: var(--text-muted);
+}
+
+.detail-divider {
+  margin: clamp(2.5rem, 6vw, 5rem) 0 clamp(2rem, 4vw, 3.5rem);
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+.drink-detail .recipe-block {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.drink-detail #recipe-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.drink-detail .recipe-group {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.drink-detail .recipe-group-label {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0 0 .75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1.8rem;
+}
+
+.drink-detail .recipe-section {
+  min-width: 0;
+  margin: 0 0 1rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.drink-detail .recipe-shopping {
+  background-color: color-mix(in srgb, #f4eadb 84%, var(--bg) 16%);
+  background-image: none;
+}
+
+.drink-detail .recipe-method {
+  background-color: color-mix(in srgb, #f0f1e8 92%, var(--leaf) 8%);
+  background-image: none;
+  border-color: color-mix(in srgb, #d8ddc9 80%, var(--leaf) 20%);
+}
+
+.drink-detail .recipe-section .recipe-heading {
+  margin: 0 0 .8rem;
+  color: var(--leaf);
+  font-family: "Archivo", sans-serif;
+  font-size: .875rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.drink-detail .recipe-ingredients,
+.drink-detail .recipe-steps {
+  color: var(--text);
+  font-size: 1.4rem;
+  line-height: 1.65;
+}
+
+.drink-detail .recipe-section .recipe-ingredients,
+.drink-detail .recipe-section .recipe-steps {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.drink-detail .recipe-section .recipe-ingredients li {
+  padding: .55rem 0;
+}
+
+.drink-detail .recipe-section .recipe-ingredients li+li {
+  margin: 0;
+  border-top: 1px solid rgba(110,68,35,.14);
+}
+
+.drink-detail .recipe-section .recipe-steps {
+  counter-reset: recipe-step;
+}
+
+.drink-detail .recipe-section .recipe-steps li {
+  position: relative;
+  min-height: 1.8rem;
+  padding-left: 2.5rem;
+  counter-increment: recipe-step;
+}
+
+.drink-detail .recipe-section .recipe-steps li+li {
+  margin-top: 1rem;
+}
+
+.drink-detail .recipe-section .recipe-steps li::before {
+  content: counter(recipe-step);
+  position: absolute;
+  top: .15em;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--leaf);
+  color: var(--surface);
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.drink-detail .recipe-portions-button {
+  background: var(--leaf);
+  color: var(--surface);
+}
+
+.drink-detail .recipe-subsection {
+  padding: .85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, #f4eadb 84%, var(--bg) 16%);
+}
+
+.drink-detail .recipe-subsection + .recipe-subsection {
+  margin-top: .8rem;
+}
+
+.drink-detail .recipe-method .recipe-subsection {
+  border-color: color-mix(in srgb, #d8ddc9 80%, var(--leaf) 20%);
+  background: color-mix(in srgb, #f0f1e8 92%, var(--leaf) 8%);
+}
+
+.drink-detail .recipe-subheading {
+  margin: 0 0 .5rem;
+  color: var(--accent);
+  font-size: 1.15em;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.drink-detail .recipe-taste-profile {
+  grid-column: 1;
+  margin: .25rem 0 0;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-hover);
+}
+
+.drink-detail > .detail-content > .taste-profile {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-color: var(--border);
+}
+
+.drink-detail .taste-profile .recipe-heading {
+  margin: 0 0 .75rem;
+  color: var(--text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.8rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.drink-detail .recipe-taste-profile .recipe-heading {
+  margin: 0 0 .5rem;
+  color: var(--leaf);
+  font-family: "Archivo", sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.drink-detail .taste-label {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+}
+
+.drink-detail .recipe-spirit-links {
+  border-color: var(--border);
+}
+
+.drink-detail .recipe-spirit-links .recipe-heading {
+  margin-bottom: .75rem;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.05rem;
+}
+
+@media (max-width:700px) {
+  .drink-detail {
+    margin: 0;
+    padding: .75rem 0 0;
+    background: var(--detail-panel-gradient);
+  }
+
+  .detail-back {
+    margin-left: 1.1rem;
+  }
+
+  .detail-panel {
+    padding: 1.1rem;
+    border-radius: 0;
+    border-top: 0;
+    background: transparent;
+  }
+
+  .detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "media"
+      "copy";
+    gap: 1.5rem;
+  }
+
+  .detail-media {
+    border-radius: 16px;
+  }
+
+  .detail-copy h1 {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
   dialog.modal-backdrop {
     padding: 0.75rem;
   }
@@ -195,6 +775,44 @@ dialog.modal-backdrop::backdrop {
 
   .modal-info {
     padding: 1.25rem;
+  }
+
+  .drink-detail .recipe-group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .9rem;
+  }
+
+  .drink-detail .recipe-group-label,
+  .drink-detail .recipe-taste-profile {
+    grid-column: 1;
+  }
+
+  .drink-detail .recipe-section {
+    padding: 1rem;
+  }
+
+  .drink-detail .recipe-ingredients,
+  .drink-detail .recipe-steps {
+    font-size: 1.125rem;
+  }
+
+  .drink-detail .date {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width:701px) {
+  .drink-detail .date {
+    font-size: 1.1rem;
+  }
+
+  .drink-detail .taste-profile .taste-row {
+    justify-content: flex-start;
+    gap: 1.5rem;
+  }
+
+  .drink-detail .taste-profile .taste-label {
+    min-width: 5rem;
   }
 }
 
@@ -222,6 +840,7 @@ dialog.modal-backdrop::backdrop {
   margin: 0.8rem auto 0;
   background: none;
   border: 1px solid var(--border);
+  font-size: 1.125rem;
   color: var(--text-muted);
   border-radius: 8px;
   padding: 0.4rem 1rem;
@@ -312,7 +931,7 @@ dialog.modal-backdrop::backdrop {
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
-#recipe-groups .recipe-group-label:first-child {
+#recipe-groups .recipe-group:first-child .recipe-group-label {
   margin-top: 0;
 }
 
@@ -581,7 +1200,7 @@ dialog.modal-backdrop::backdrop {
 }
 
 .taste-label {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: var(--text);
 }
 

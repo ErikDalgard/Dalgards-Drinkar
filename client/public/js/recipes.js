@@ -110,11 +110,13 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
         standaloneTaste.style.display = "none";
     }
     for (let i = 0; i < groupCount; i++) {
+        const group = document.createElement("div");
+        group.className = "recipe-group";
         if (groupCount > 1) {
             const label = document.createElement("p");
             label.className = "recipe-group-label";
             label.textContent = names[i] || `Drink ${i + 1}`;
-            container.appendChild(label);
+            group.appendChild(label);
         }
         const groupServings = Array.isArray(servings) ? servings[i] ?? servings[0] ?? 1 : servings;
         const groupTargetServings = Array.isArray(targetServings)
@@ -129,14 +131,15 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
         const steps = (stepGroups[i] || "").split(";").map((s) => s.trim()).filter(Boolean);
         if (ingredients.length) {
             const control = portionsControls[i] || null;
-            container.appendChild(makeRecipeSection("Ingredienser", ingredients, false, control));
+            group.appendChild(makeRecipeSection("Ingredienser", ingredients, false, control));
         }
         if (steps.length) {
-            container.appendChild(makeRecipeSection("Gör så här", steps, true));
+            group.appendChild(makeRecipeSection("Gör så här", steps, true));
         }
         if (groupCount > 1 && tasteGroups[i]) {
-            appendTasteProfile(container, tasteGroups[i], true);
+            appendTasteProfile(group, tasteGroups[i], true);
         }
+        container.appendChild(group);
     }
 }
 

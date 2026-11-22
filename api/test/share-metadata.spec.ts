@@ -14,7 +14,7 @@ const get = (query = '?drink=42', method = 'GET') => frontend.fetch(new Request(
 beforeEach(() => { fetchMock.activate(); fetchMock.disableNetConnect(); });
 afterEach(() => { fetchMock.assertNoPendingInterceptors(); fetchMock.deactivate(); });
 describe('server-side share metadata', () => {
-  it('embeds the drink metadata in actual HTML while retaining the modal', async () => {
+  it('embeds the drink metadata in actual HTML while retaining the detail page', async () => {
     lookup(200, drink); const response = await get(); const body = await response.text();
     expect(response.status).toBe(200);
     expect(body).toContain('<title>Whiskey Sour</title>');
@@ -22,7 +22,9 @@ describe('server-side share metadata', () => {
     expect(body).toContain('property="og:image" content="https://media.example.test/drink%20photo.jpeg"');
     expect(body).toContain('property="og:url" content="https://site.example.test/?drink=42"');
     expect(body.match(/property="og:title"/g)).toHaveLength(1);
-    expect(body).toContain('id="modal-backdrop"');
+    expect(body).toContain('id="drink-page"');
+    expect(body).toContain('id="drink-page-loading"');
+    expect(body).not.toContain('id="modal-backdrop"');
     expect(response.headers.get('ETag')).toBeNull();
     expect(response.headers.get('Cache-Control')).toBe('no-store');
   });

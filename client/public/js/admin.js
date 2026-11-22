@@ -116,6 +116,7 @@ document.getElementById("preview-btn").addEventListener("click", () => {
       photo: document.getElementById("f-photo-file").files[0],
     });
   } catch (err) {
+    console.log(err);
     showToast("Kunde inte öppna förhandsgranskningen. Försök igen.", "error");
   }
 });
