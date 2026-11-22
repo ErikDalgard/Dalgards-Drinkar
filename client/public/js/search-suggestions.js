@@ -6,12 +6,17 @@ export function createSearchSuggestions(onSelect) {
     const list = document.getElementById("search-suggestion-list");
     const summary = document.getElementById("search-suggestions-summary");
     const closeButton = document.getElementById("search-suggestions-close");
+    const clearButton = document.getElementById("search-clear");
     const MAX_RESULTS = 20;
     const wrapper = input.closest(".search-wrapper");
     let candidates = [];
     let matches = [];
     let active = -1;
     let dismissed = false;
+
+    function syncClearButton() {
+        clearButton.hidden = !input.value;
+    }
 
     function close() {
         popup.hidden = true;
@@ -67,7 +72,11 @@ export function createSearchSuggestions(onSelect) {
         popup.hidden = matches.length === 0;
         input.setAttribute("aria-expanded", String(matches.length > 0));
     }
-    input.addEventListener("input", () => { dismissed = false; render(); });
+    input.addEventListener("input", () => {
+        dismissed = false;
+        syncClearButton();
+        render();
+    });
     input.addEventListener("focus", render);
     input.addEventListener("click", () => { dismissed = false; render(); });
     input.addEventListener("blur", (event) => {
@@ -76,6 +85,13 @@ export function createSearchSuggestions(onSelect) {
     closeButton.addEventListener("click", () => {
         input.focus({ preventScroll: true });
         close();
+    });
+    clearButton.addEventListener("pointerdown", (event) => event.preventDefault());
+    clearButton.addEventListener("click", () => {
+        input.value = "";
+        dismissed = false;
+        input.focus({ preventScroll: true });
+        input.dispatchEvent(new Event("input", { bubbles: true }));
     });
     popup.addEventListener("focusout", (event) => {
         if (event.relatedTarget !== input && !popup.contains(event.relatedTarget)) close();
@@ -97,7 +113,13 @@ export function createSearchSuggestions(onSelect) {
     document.addEventListener("click", (event) => {
         if (!wrapper.contains(event.target) && !popup.contains(event.target)) close();
     });
-    return { update(drinks) { candidates = drinks; render(); } };
+    return {
+        update(drinks) {
+            candidates = drinks;
+            syncClearButton();
+            render();
+        },
+    };
 }
 
 // Public and admin search share thumbnail, name, date and theme presentation.

@@ -144,9 +144,12 @@
 }
 
 #key-save {
-  background-color: #c89a67;
-  color: black;
-}
+  background-color: var(--leaf);
+  border-color: var(--leaf);
+  border-radius: 999px;
+  color: var(--surface);
+  font-size: 1rem;
+  }
 
 #key-section {
   margin: 0 auto;
@@ -845,6 +848,10 @@ textarea.admin-recipe-value {
   border-color: var(--accent);
   color: var(--surface);
   font-weight: 700;
+  background-color: var(--leaf);
+  border-color: var(--leaf);
+  color: var(--surface);
+  font-size: 1rem;;
 }
 
 .admin-nav-button:hover:not(:disabled):not([aria-pressed="true"]) {

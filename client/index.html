@@ -57,6 +57,7 @@
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
     </svg>
     <input id="search" type="text" placeholder="Sök efter en drink…" aria-label="Sök efter en drink" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestion-list" autocomplete="off">
+    <button type="button" class="search-clear" id="search-clear" aria-label="Rensa sökning" hidden>×</button>
     <div id="search-suggestions" class="search-suggestions" hidden>
       <div class="search-suggestions-header">
         <span id="search-suggestions-summary">Drinkförslag</span>
@@ -164,7 +165,7 @@
   </button>
 </div>
 <div class="menu">
-  <p class="count" id="count"></p>
+  <p class="count" id="count" role="status" aria-live="polite"></p>
   <label class="sort-control">
     <span aria-hidden="true">Sortera</span>
     <svg class="sort-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
