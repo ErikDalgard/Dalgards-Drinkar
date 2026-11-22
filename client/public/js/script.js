@@ -77,7 +77,7 @@ function render() {
         grid.appendChild(card);
     });
     document.getElementById("count").textContent =
-        `Visar ${pageItems.length} av ${filtered.length} drinkar`;
+        `Visar ${filtered.length} av ${allVideos.length} drinkar`;
     const empty = document.getElementById("empty");
     empty.style.display = filtered.length ? "none" : "block";
     if (!filtered.length && filters.getState().favoritesOnly) {
