@@ -106,7 +106,6 @@ function renderLoadMore(totalBatches) {
         animateCardsFrom = previousCount;
         visibleBatches += 1;
         render();
-        document.querySelector(`#grid .card:nth-child(${previousCount + 1}) .card-open`)?.focus();
     });
     el.appendChild(loadMore);
 }
