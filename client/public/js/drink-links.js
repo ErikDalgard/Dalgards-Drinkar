@@ -27,6 +27,7 @@ export function createDrinkNavigation(drinks, dialog) {
     }
     document.getElementById("home-link").addEventListener("click", () => {
         if (!notice.hidden) window.location.assign(window.location.pathname);
+        else if (currentId !== null) close();
     });
     function show(drink) {
         currentId = String(drink.id);
@@ -41,15 +42,19 @@ export function createDrinkNavigation(drinks, dialog) {
         if (returningToList) return;
         const id = String(drink.id);
         if (currentId === id) return;
-        // Opening a different drink within the overlay replaces its entry.
-        const method = currentId === null ? "pushState" : "replaceState";
-        window.history[method]({ ...window.history.state, drinkModalEntry: entryToken }, "", drinkUrl(id));
+        if (currentId === null) {
+            const listState = { ...window.history.state, archiveScrollY: window.scrollY };
+            window.history.replaceState(listState, "", window.location.href);
+            window.history.pushState({ ...listState, drinkPageEntry: entryToken }, "", drinkUrl(id));
+        } else {
+            window.history.replaceState({ ...window.history.state, drinkPageEntry: entryToken }, "", drinkUrl(id));
+        }
         show(drink);
     }
     function close() {
         currentId = null;
         resetShareStatus();
-        if (window.history.state?.drinkModalEntry === entryToken) {
+        if (window.history.state?.drinkPageEntry === entryToken) {
             returningToList = true;
             window.history.back();
         } else {
@@ -61,10 +66,14 @@ export function createDrinkNavigation(drinks, dialog) {
         returningToList = false;
         const id = new URL(window.location.href).searchParams.get("drink");
         if (id === null) {
+            const archiveScrollY = window.history.state?.archiveScrollY;
             currentId = null;
             resetShareStatus();
             dialog.close({ updateHistory: false });
             setNotFound(false);
+            if (Number.isFinite(archiveScrollY)) {
+                requestAnimationFrame(() => window.scrollTo(0, archiveScrollY));
+            }
             return;
         }
         const drink = drinks.find((item) => String(item.id) === id);

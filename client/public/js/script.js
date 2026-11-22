@@ -3,7 +3,7 @@ import { buildThemeColorMap } from "./themes.js";
 import { createFilterLinks } from "./filter-links.js";
 import { createFilters } from "./filters.js";
 import { makeCard } from "./cards.js";
-import { createDrinkDialog } from "./dialogs.js";
+import { createDrinkPage } from "./dialogs.js";
 import { createDrinkNavigation } from "./drink-links.js";
 import { createSearchSuggestions } from "./search-suggestions.js";
 import { loadSpirits } from "./spirits.js";
@@ -13,7 +13,7 @@ let animateCardsFrom = null;
 const PAGE_SIZE = 24;
 let filters;
 let filterLinks;
-let drinkDialog;
+let drinkPage;
 let drinkNavigation;
 let searchSuggestions;
 async function init() {
@@ -25,6 +25,7 @@ async function init() {
     }
     catch (err) {
         console.error(err);
+        document.documentElement.classList.remove("drink-page-loading");
         document.body.classList.add("archive-unavailable");
         document.getElementById("load-error").hidden = false;
         document.getElementById("load-error-title").focus({ preventScroll: true });
@@ -38,16 +39,17 @@ async function init() {
         filterLinks?.update();
         render();
     }, allVideos);
-    drinkDialog = createDrinkDialog(
+    drinkPage = createDrinkPage(
         (theme) => drinkNavigation.whenClosed(() => filters.filterByTheme(theme)),
         () => drinkNavigation.close(),
         (spirit) => drinkNavigation.whenClosed(() => filters.filterBySpirit(spirit)),
     );
-    drinkNavigation = createDrinkNavigation(allVideos, drinkDialog);
+    drinkNavigation = createDrinkNavigation(allVideos, drinkPage);
     searchSuggestions = createSearchSuggestions(drinkNavigation.open);
     filterLinks = createFilterLinks(filters);
     filterLinks.restore();
     drinkNavigation.restore();
+    document.documentElement.classList.remove("drink-page-loading");
 }
 function render() {
     const filtered = filters.apply(allVideos);

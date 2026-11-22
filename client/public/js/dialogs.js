@@ -4,10 +4,18 @@ import { renderRecipeGroups, renderTasteProfile, renderSpiritLinks } from "./rec
 import { isFavorite, subscribeFavorites, toggleFavorite } from "./favorites.js";
 import { hideFavoriteToast, showFavoriteToast } from "./favorite-toast.js";
 export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSelect = () => {}, mediaUrl = (path) => `${R2_BASE_URL}${path}`) {
+    return createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, false);
+}
+export function createDrinkPage(onThemeSelect, onClose = () => {}, onSpiritSelect = () => {}, mediaUrl = (path) => `${R2_BASE_URL}${path}`) {
+    return createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, true);
+}
+function createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, pageMode) {
     let modalTrigger = null;
     let previousBodyOverflow = "";
     let currentDrink = null;
     const favoriteButton = document.getElementById("modal-favorite");
+    const detailPage = pageMode ? document.getElementById("drink-page") : null;
+    const originalDocumentTitle = document.title;
     let portionCounters = [];
     function renderCurrentRecipe() {
         if (!currentDrink) return;
@@ -127,12 +135,17 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
         if (favoriteButton) hideFavoriteToast(true);
         currentDrink = v;
         syncFavoriteButton();
-        const dialog = document.getElementById("modal-backdrop");
-        if (!dialog.open) {
+        const dialog = pageMode ? null : document.getElementById("modal-backdrop");
+        if (pageMode) {
+            if (detailPage.hidden) modalTrigger = document.activeElement;
+            detailPage.hidden = false;
+            document.body.classList.add("drink-page-active");
+            document.title = `${v.drink} – Urkällan`;
+        } else if (!dialog.open) {
             modalTrigger = document.activeElement;
             previousBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
         }
-        document.body.style.overflow = "hidden";
         document.getElementById("modal-video").src = mediaUrl(v.url);
         document.getElementById("modal-video").poster = v.photo ? mediaUrl(v.photo) : "";
         document.getElementById("modal-drink").textContent =
@@ -141,10 +154,8 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
         const hue = themeHue(v.theme || "");
         modalTheme.textContent = v.theme;
         modalTheme.hidden = !v.theme?.trim();
-        modalTheme.style.background =
-            `hsl(${hue},65%,35%)`;
-        modalTheme.style.color =
-            `hsl(${hue},20%,95%)`;
+        modalTheme.style.background = `hsl(${hue},65%,35%)`;
+        modalTheme.style.color = `hsl(${hue},20%,95%)`;
         document.getElementById("modal-date").textContent =
             formatDrinkDate(v.date);
         document.getElementById("modal-note").textContent =
@@ -159,42 +170,53 @@ export function createDrinkDialog(onThemeSelect, onClose = () => {}, onSpiritSel
             closeModal();
             onSpiritSelect(spirit);
         });
-        document
-            .getElementById("modal-backdrop")
-            .classList.add("open");
-        if (!dialog.open) dialog.showModal();
-        document.querySelector(".modal-scroll").scrollTop = 0;
-        document.getElementById("modal-close").focus();
+        if (pageMode) {
+            window.scrollTo(0, 0);
+            document.getElementById("modal-drink").focus({ preventScroll: true });
+        } else {
+            document
+                .getElementById("modal-backdrop")
+                .classList.add("open");
+            if (!dialog.open) dialog.showModal();
+            document.querySelector(".modal-scroll").scrollTop = 0;
+            document.getElementById("modal-close").focus();
+        }
     }
     function closeModal({ updateHistory = true } = {}) {
-        if (!document.getElementById("modal-backdrop").open) return;
+        const dialog = pageMode ? null : document.getElementById("modal-backdrop");
+        if (pageMode ? detailPage.hidden : !dialog.open) return;
         const video = document.getElementById("modal-video");
         video.pause();
         video.src = "";
         currentDrink = null;
-        document
-            .getElementById("modal-backdrop")
-            .classList.remove("open");
-        document.getElementById("modal-backdrop").close();
-        document.body.style.overflow = previousBodyOverflow;
-        if (modalTrigger?.isConnected)
-            modalTrigger.focus({ preventScroll: true });
+        if (pageMode) {
+            detailPage.hidden = true;
+            document.body.classList.remove("drink-page-active");
+            document.title = originalDocumentTitle;
+        } else {
+            document
+                .getElementById("modal-backdrop")
+                .classList.remove("open");
+            dialog.close();
+            document.body.style.overflow = previousBodyOverflow;
+        }
+        if (modalTrigger?.isConnected) modalTrigger.focus({ preventScroll: true });
         if (updateHistory) onClose();
     }
     document
         .getElementById("modal-close")
         .addEventListener("click", closeModal);
-    document.getElementById("modal-backdrop").addEventListener("cancel", (event) => {
-        event.preventDefault();
-        closeModal();
-    });
-    document
-        .getElementById("modal-backdrop")
-        .addEventListener("click", (e) => {
-        if (e.target.id === "modal-backdrop") {
+    if (!pageMode) {
+        document.getElementById("modal-backdrop").addEventListener("cancel", (event) => {
+            event.preventDefault();
             closeModal();
-        }
-    });
+        });
+        document
+            .getElementById("modal-backdrop")
+            .addEventListener("click", (event) => {
+                if (event.target.id === "modal-backdrop") closeModal();
+            });
+    }
     document
         .getElementById("modal-theme")
         .addEventListener("click", () => {

@@ -45,7 +45,7 @@ export function createFilterLinks(filters) {
     }
     function restore() {
         const state = readFilterState(window.location.href);
-        // A modal entry has the same filters; keep the current list page in that case.
+        // A drink-page entry has the same filters; keep the current loaded batch in that case.
         const base = "https://filters.invalid/";
         if (initialized && filterUrl(base, state).href === filterUrl(base, filters.getState()).href) return;
         restoring = true;

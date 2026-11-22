@@ -46,7 +46,7 @@ test('selects the correct duplicate name by date and opens its recipe and URL', 
   await expect(options).toHaveCount(2);
   await expect(options.nth(1)).toContainText('1 januari 2025');
   await options.nth(1).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.locator('#drink-page')).toBeVisible();
   await expect(page.locator('#modal-drink')).toHaveText('Dry Martini');
   await expect(page.locator('#modal-note')).toHaveText('Den äldre versionen');
   await expect(page.locator('#recipe-block')).toContainText('6 cl gin');
@@ -62,13 +62,13 @@ test('selects the correct duplicate name by date and opens its recipe and URL', 
   await expect(page).toHaveURL((url) => url.searchParams.get("drink") === "101");
   await expect(page.locator('#search-suggestions')).toBeHidden();
   await page.goBack();
-  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await expect(page.locator('#drink-page')).toBeHidden();
   await expect(page.getByRole('combobox', { name: 'Sök efter en drink' })).toHaveValue('dry martini');
 });
 test('each drink variant has an independent portions counter', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Sök efter en drink' }).fill('Gin & Vodka Sour');
   await page.getByRole('listbox', { name: 'Drinkförslag' }).getByRole('option').first().click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.locator('#drink-page')).toBeVisible();
   await expect(page.locator('.recipe-portions')).toHaveCount(2);
   await expect(page.locator('#modal-servings')).toHaveValue('2');
   await expect(page.locator('#modal-servings-2')).toHaveValue('4');
@@ -98,6 +98,28 @@ test('each drink variant has an independent portions counter', async ({ page }) 
   await expect(page.locator('.recipe-shopping').first()).toContainText('18 cl gin');
   await expect(page.locator('.recipe-shopping').nth(1)).toContainText('8 cl vodka');
 });
+
+test('recipe subsections and their headings have clear spacing', async ({ page }) => {
+  const headingDrink = {
+    ...base,
+    id: 404,
+    drink: 'Ruby Syrup Sour',
+    date: '2026-01-03',
+    ingredients: '# Drinken;6 cl gin;# Sockerlag;1 cl syrup',
+    steps: '# Drinken;Skaka;# Sockerlag;Koka och låt svalna',
+  };
+  await page.route('http://localhost:8787/drinks', (route) => route.fulfill({ json: [headingDrink] }));
+  await page.goto('/?drink=404');
+  await expect(page.locator('#drink-page')).toBeVisible();
+
+  const subsectionGap = await page.locator('.recipe-shopping .recipe-subsection').nth(1)
+    .evaluate((element) => parseFloat(getComputedStyle(element).marginTop));
+  const headingGap = await page.locator('.recipe-shopping .recipe-subheading').first()
+    .evaluate((element) => parseFloat(getComputedStyle(element).marginBottom));
+  expect(subsectionGap).toBeGreaterThan(0);
+  expect(headingGap).toBeGreaterThan(0);
+});
+
 test('opens the correct suggestion with ArrowDown and Enter', async ({ page }) => {
   const search = page.getByRole('combobox', { name: 'Sök efter en drink' });
   await search.fill('dry martini');
@@ -105,8 +127,8 @@ test('opens the correct suggestion with ArrowDown and Enter', async ({ page }) =
   await search.press('Enter');
   await expect(page.locator('#modal-note')).toHaveText('Den nyare versionen');
   await expect(page).toHaveURL((url) => url.searchParams.get("drink") === "202");
-  await page.getByRole('button', { name: 'Stäng drink', exact: true }).click();
-  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByRole('button', { name: 'Tillbaka', exact: true }).click();
+  await expect(page.locator('#drink-page')).toBeHidden();
 });
 test('caps scrollable suggestions and closes them without clearing search', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Sök efter en drink' }).fill('martini');
@@ -124,16 +146,16 @@ test('caps scrollable suggestions and closes them without clearing search', asyn
 });
 
 
-test('loading more drinks and closing a modal keeps all visible drinks', async ({ page }) => {
+test('loading more drinks and returning from the detail page keeps all visible drinks', async ({ page }) => {
   await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
   await page.getByRole('button', { name: 'Visa fler drinkar', exact: true }).click();
   await expect(page.locator('#grid .card')).toHaveCount(27);
   await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
   await expect(page.locator('#pagination')).toBeEmpty();
   await page.locator('#grid .card-open').first().click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.locator('#drink-page')).toBeVisible();
   await page.goBack();
-  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await expect(page.locator('#drink-page')).toBeHidden();
   await expect(page.locator('#grid .card')).toHaveCount(27);
   await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
 });

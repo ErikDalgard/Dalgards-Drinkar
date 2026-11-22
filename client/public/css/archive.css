@@ -1750,6 +1750,32 @@ body.archive-page {
   outline-offset: 3px;
 }
 
+body.drink-page-active .intro-wrap,
+html.drink-page-loading body .intro-wrap,
+body.drink-page-active .load-error,
+html.drink-page-loading body .load-error,
+body.drink-page-active .controls,
+html.drink-page-loading body .controls,
+body.drink-page-active .filter-backdrop,
+html.drink-page-loading body .filter-backdrop,
+body.drink-page-active .filter-panel,
+html.drink-page-loading body .filter-panel,
+body.drink-page-active .active-filters,
+html.drink-page-loading body .active-filters,
+body.drink-page-active .menu,
+html.drink-page-loading body .menu,
+body.drink-page-active .drink-link-notice,
+html.drink-page-loading body .drink-link-notice,
+body.drink-page-active #grid,
+html.drink-page-loading body #grid,
+body.drink-page-active #empty,
+html.drink-page-loading body #empty,
+body.drink-page-active #pagination,
+html.drink-page-loading body #pagination,
+html.drink-page-loading body .site-footer {
+  display: none !important;
+}
+
 @media (max-width:700px) {
   .drink-link-notice {
     margin: 2rem 1rem;

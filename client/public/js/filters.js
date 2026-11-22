@@ -526,6 +526,7 @@ export function createFilters(themes, onChange, videos = []) {
     document
         .getElementById("home-link")
         .addEventListener("click", () => {
+        if (document.body.classList.contains("drink-page-active")) return;
         document.getElementById("sort-order").value = "desc";
         document.getElementById("search").value = "";
         resetFilters();
