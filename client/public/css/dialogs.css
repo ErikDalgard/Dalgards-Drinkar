@@ -313,8 +313,8 @@ html.drink-page-loading .drink-page-skeleton {
 .drink-detail {
   --detail-panel-gradient: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--bg) 80%, var(--surface) 20%) 0%,
-    color-mix(in srgb, var(--bg) 70%, var(--surface) 30%) 100%
+    color-mix(in srgb, var(--bg) 90%, var(--surface) 10%) 0%,
+    color-mix(in srgb, var(--bg) 80%, var(--surface) 20%) 100%
   );
   width: 100%;
   min-width: 0;
