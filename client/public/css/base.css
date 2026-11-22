@@ -23,8 +23,16 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Cormorant Garamond",sans-serif;
+  font-family: "Cormorant Garamond",Georgia,serif;
+  font-variant-numeric: lining-nums;
   -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 
@@ -47,7 +55,6 @@ header {
 }
 
 header h1 {
-  font-family: "Cormorant Garamond",serif;
   font-variant: small-caps;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -180,7 +187,6 @@ header h1:hover {
 /* Shared form controls */
 
 .filter-toggle {
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.95rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -216,7 +222,6 @@ header h1:hover {
 
 .filter-group input,
 .filter-group select {
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.95rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -228,7 +233,6 @@ header h1:hover {
 
 .filter-clear {
   height: 40px;
-  font-family: "Cormorant Garamond",serif;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text-muted);

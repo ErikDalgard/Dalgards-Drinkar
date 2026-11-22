@@ -3,7 +3,6 @@
 /* Form layout and action buttons */
 
 .footer-admin-link {
-  font-family: "Cormorant Garamond",serif;
   font-size: 1.15rem;
   background: transparent;
   border: 1px solid rgba(255,255,255,0.3);
@@ -61,7 +60,6 @@
 #drink-form .filter-group input[type="text"],
 #drink-form .filter-group input[type="file"] {
   width: 100%;
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.95rem;
   border: 1px solid var(--border);
   color: var(--text);
@@ -192,7 +190,6 @@
 }
 
 .file-button {
-  font-family: "Cormorant Garamond",serif;
   font-weight: 600;
   font-size: 0.85rem;
   background: #c89a67;
@@ -210,7 +207,6 @@
 }
 
 .file-name {
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.85rem;
   color: var(--text-muted);
   overflow: hidden;
@@ -223,7 +219,6 @@
 
 .edit-search-wrap input {
   width: 100%;
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.95rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -298,7 +293,6 @@
   left: 50%;
   transform: translateX(-50%) translateY(-20px);
   z-index: 100;
-  font-family: "Cormorant Garamond",serif;
   font-weight: 600;
   font-size: 1rem;
   padding: 0.8rem 1.6rem;

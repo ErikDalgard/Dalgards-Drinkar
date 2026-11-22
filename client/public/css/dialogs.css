@@ -42,7 +42,6 @@
 }
 
 .modal-info h2 {
-  font-family: "Cormorant Garamond",serif;
   font-weight: 600;
   margin: 0 0 0.4rem;
   color: var(--text);
@@ -227,7 +226,6 @@ dialog.modal-backdrop::backdrop {
   border-radius: 8px;
   padding: 0.4rem 1rem;
   cursor: pointer;
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.85rem;
 }
 
@@ -378,7 +376,6 @@ dialog.modal-backdrop::backdrop {
   align-items: center;
   gap: 0.35rem;
   color: var(--text);
-  font-family: "Inter",sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
 }
@@ -388,12 +385,13 @@ dialog.modal-backdrop::backdrop {
   place-items: center;
   width: 33px;
   height: 33px;
-  padding: 0;
+  padding: 0 0 2px;
   border: 0;
   border-radius: 50%;
   background: var(--leaf);
   color: var(--surface);
-  font: 1.5rem/1 "Inter",sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
   cursor: pointer;
 }
 
@@ -481,7 +479,9 @@ dialog.modal-backdrop::backdrop {
   border-radius: 50%;
   background: var(--leaf);
   color: #fff;
-  font: 600 0.9rem/1"Inter",sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .recipe-spirit-links {

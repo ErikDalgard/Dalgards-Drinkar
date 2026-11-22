@@ -14,7 +14,6 @@
 }
 
 .controls input {
-  font-family: "Cormorant Garamond",sans-serif;
   font-size: 0.95rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -67,7 +66,6 @@
   outline: none;
   background: transparent;
   box-shadow: none;
-  font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1.125rem;
   font-weight: 500;
   line-height: 1.4;
@@ -78,7 +76,6 @@
   min-width: 0;
   width: 100%;
   min-height: 48px;
-  font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1.125rem;
   font-weight: 500;
   line-height: 1.4;
@@ -242,7 +239,6 @@
   padding: 0;
   opacity: 1;
   color: var(--text);
-  font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.4;
@@ -257,7 +253,6 @@
   min-height: 48px;
   color: var(--text);
   cursor: pointer;
-  font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.4;
@@ -401,7 +396,6 @@
 }
 
 .card-drink {
-  font-family: "Cormorant Garamond",serif;
   font-weight: 600;
   color: var(--text);
   font-size: 1.4rem;
@@ -560,7 +554,6 @@
   background: hsl(var(--theme-hue, 30),45%,38%);
   padding: 0.3rem 0.8rem;
   color: hsl(var(--theme-hue, 30),20%,95%);
-  font-family: "Cormorant Garamond",Georgia,serif;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.2;
@@ -694,7 +687,6 @@
 
 .theme-picker-toggle {
   height: 40px;
-  font-family: "Cormorant Garamond",serif;
   font-size: 0.95rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -921,7 +913,6 @@
   font-size: .9rem;
   font-weight: 500;
   line-height: 1;
-  font-variant-numeric: lining-nums;
 }
 
 .favorite-filter-unit {
@@ -1149,7 +1140,6 @@
 
   .filter-sheet-header h2 {
     margin: 0;
-    font-family: "Cormorant Garamond",Georgia,serif;
     font-size: 1.7rem;
   }
 
@@ -1397,7 +1387,6 @@
 }
 
 .pagination button {
-  font-family: "Cormorant Garamond",serif;
   font-size: 1.2rem;
   background: var(--surface);
   border: 1px solid var(--border);
