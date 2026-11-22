@@ -23,6 +23,21 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#grid .card')).toHaveCount(24);
 });
+test('clears the search query with the search field button', async ({ page }) => {
+  const search = page.getByRole('combobox', { name: 'Sök efter en drink' });
+  const clearButton = page.getByRole('button', { name: 'Rensa sökning' });
+  await expect(clearButton).toBeHidden();
+
+  await search.fill('Dry Martini');
+  await expect(clearButton).toBeVisible();
+  await expect(page.locator('#grid .card')).toHaveCount(2);
+
+  await clearButton.click();
+  await expect(search).toHaveValue('');
+  await expect(search).toBeFocused();
+  await expect(clearButton).toBeHidden();
+  await expect(page.locator('#grid .card')).toHaveCount(24);
+});
 test('selects the correct duplicate name by date and opens its recipe and URL', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Sök efter en drink' }).fill('dry martini');
   const options = page.getByRole('listbox', { name: 'Drinkförslag' }).getByRole('option');
@@ -107,12 +122,16 @@ test('caps scrollable suggestions and closes them without clearing search', asyn
 });
 
 
-test('closing a modal keeps the current archive page', async ({ page }) => {
-  await page.getByRole('button', { name: 'Nästa sida', exact: true }).click();
-  await expect(page.locator('#pagination')).toContainText('Sida 2 av 2');
+test('loading more drinks and closing a modal keeps all visible drinks', async ({ page }) => {
+  await expect(page.locator('#count')).toHaveText('Visar 24 av 27 drinkar');
+  await page.getByRole('button', { name: 'Visa fler drinkar', exact: true }).click();
+  await expect(page.locator('#grid .card')).toHaveCount(27);
+  await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
+  await expect(page.locator('#pagination')).toBeEmpty();
   await page.locator('#grid .card-open').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('dialog')).not.toBeVisible();
-  await expect(page.locator('#pagination')).toContainText('Sida 2 av 2');
+  await expect(page.locator('#grid .card')).toHaveCount(27);
+  await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
 });
