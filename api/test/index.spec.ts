@@ -1,5 +1,5 @@
 import { env, SELF } from "cloudflare:test";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const sample = {
   date: "2026-01-02", theme: "Fredag", drink: "Whiskey Sour",
@@ -79,6 +79,42 @@ describe("admin authentication", () => {
   });
 });
 describe("drink lifecycle", () => {
+  it("logs one structured field event for each drink change", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    const id = await create();
+    log.mockClear();
+
+    const response = await request(`/drinks/${id}`, "PUT", {
+      ...sample,
+      theme: "Lördag",
+      drink: "Updated Sour",
+    }, env.ADMIN_KEY);
+
+    expect(response.status).toBe(200);
+    const fieldEvents = log.mock.calls
+      .map(([value]) => typeof value === "string" ? JSON.parse(value) : null)
+      .filter((event) => event?.event === "drink_field_updated");
+
+    expect(fieldEvents).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        event: "drink_field_updated",
+        drink_id: String(id),
+        drink_name: "Updated Sour",
+        field: "theme",
+        from: "Fredag",
+        to: "Lördag",
+      }),
+      expect.objectContaining({
+        event: "drink_field_updated",
+        drink_id: String(id),
+        drink_name: "Updated Sour",
+        field: "drink",
+        from: "Whiskey Sour",
+        to: "Updated Sour",
+      }),
+    ]));
+    log.mockRestore();
+  });
   it("creates, edits, and deletes a drink and its associated media", async () => {
     const id = await create();
     await env.MEDIA.put(sample.url, "video"); await env.MEDIA.put(sample.photo, "photo"); await env.MEDIA.put("unrelated.mp4", "keep");

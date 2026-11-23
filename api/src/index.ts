@@ -321,6 +321,17 @@ export default {
           drink_name: updated.drink,
           changes,
         }));
+        for (const [field, change] of Object.entries(changes)) {
+          if (!change || typeof change !== "object") continue;
+          console.log(JSON.stringify({
+            event: "drink_field_updated",
+            drink_id: id,
+            drink_name: updated.drink,
+            field,
+            from: "from" in change ? change.from : null,
+            to: "to" in change ? change.to : null,
+          }));
+        }
       }
 
       return new Response(JSON.stringify({ success: true }), {
