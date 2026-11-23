@@ -113,6 +113,8 @@ describe("drink lifecycle", () => {
         to: "Updated Sour",
       }),
     ]));
+    expect(fieldEvents).toHaveLength(2);
+    expect(fieldEvents.map((event) => event.field)).not.toContain("taste");
     log.mockRestore();
   });
   it("creates, edits, and deletes a drink and its associated media", async () => {

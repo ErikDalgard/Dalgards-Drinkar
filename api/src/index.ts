@@ -318,6 +318,8 @@ export default {
       const updated = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
         .bind(id).first();
       if (updated) {
+        const normalizeChangeValue = (value: unknown): unknown =>
+          value == null ? "" : value;
         const fields = [
           ["date", "date", body.date],
           ["theme", "theme", body.theme || ""],
@@ -331,10 +333,11 @@ export default {
           ["servings", "servings", storedServings],
         ] as const;
         const changes = Object.fromEntries(fields
-          .filter(([column, , value]) => previous?.[column] !== value)
+          .filter(([column, , value]) =>
+            normalizeChangeValue(previous?.[column]) !== normalizeChangeValue(value))
           .map(([column, label, value]) => [label, {
-            from: previous?.[column] ?? null,
-            to: value ?? null,
+            from: normalizeChangeValue(previous?.[column]),
+            to: normalizeChangeValue(value),
           }]));
         console.log(JSON.stringify({
           event: "drink_updated",
