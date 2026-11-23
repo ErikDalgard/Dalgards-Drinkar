@@ -157,6 +157,39 @@ describe("media uploads", () => {
   });
 });
 
+describe("archive analytics", () => {
+  it("accepts normalized filter events", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "archive_filters",
+      theme: "Fredag",
+      spirits: ["Gin", "Gin", "Rom"],
+      tastes: ["sour", "sweet"],
+      search: "citron",
+      resultCount: 4,
+      favoritesOnly: false,
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true });
+  });
+
+  it("rejects unknown event types", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "unknown",
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("rejects invalid JSON", async () => {
+    const headers = new Headers({ "Content-Type": "application/json" });
+    const response = await SELF.fetch("https://example.test/analytics/event", {
+      method: "POST",
+      headers,
+      body: "{",
+    });
+    expect(response.status).toBe(400);
+  });
+});
+
 describe("individual drink links", () => {
   it("loads a drink by id without authentication", async () => {
     const id = await create();

@@ -4,7 +4,11 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-08-13",
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "destinations": ["grafana-logs"]
+    }
   },
   "upload_source_maps": true,
 

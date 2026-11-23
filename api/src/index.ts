@@ -84,13 +84,82 @@ export default {
       });
     }
 
+    // POST /analytics/event — publik, endast normaliserade filter- och sökinformation loggas
+    if (url.pathname === "/analytics/event" && request.method === "POST") {
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return Response.json({ error: "Ogiltig JSON" }, {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+
+      if (!body || typeof body !== "object") {
+        return Response.json({ error: "Ogiltigt analytics-event" }, {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+
+      const payload = body as Record<string, unknown>;
+      if (payload.event !== "archive_filters") {
+        return Response.json({ error: "Okänd analytics-händelse" }, {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+
+      const cleanArray = (value: unknown, maximum: number): string[] =>
+        Array.isArray(value)
+          ? [...new Set(value
+              .filter((item): item is string => typeof item === "string")
+              .map((item) => item.trim())
+              .filter(Boolean)
+              .slice(0, maximum))]
+          : [];
+
+      const theme = typeof payload.theme === "string" ? payload.theme.trim().slice(0, 80) : "";
+      const search = typeof payload.search === "string" ? payload.search.trim().slice(0, 100) : "";
+      const spirits = cleanArray(payload.spirits, 10);
+      const tastes = cleanArray(payload.tastes, 10);
+      const resultCount = typeof payload.resultCount === "number" &&
+        Number.isSafeInteger(payload.resultCount) && payload.resultCount >= 0
+        ? payload.resultCount
+        : null;
+
+      console.log(JSON.stringify({
+        event: "archive_filters",
+        theme: theme || null,
+        spirits,
+        tastes,
+        search: search || null,
+        result_count: resultCount,
+        favorites_only: payload.favoritesOnly === true,
+      }));
+
+      return Response.json({ success: true }, { headers: corsHeaders });
+    }
+
+    if (url.pathname === "/analytics/event") {
+      return new Response("Method not allowed", {
+        status: 405,
+        headers: { ...corsHeaders, Allow: "POST, OPTIONS" },
+      });
+    }
+
     // GET /drinks/:id — public lookup for individual drink links and metadata.
     const getMatch = url.pathname.match(/^\/drinks\/(\d+)$/);
     if (getMatch && request.method === "GET") {
       const row = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
         .bind(getMatch[1]).first();
       if (row) {
-        console.log("Drink viewed:", { id: String(row.id), name: row.drink });
+        console.log(JSON.stringify({
+          event: "drink_viewed",
+          drink_id: String(row.id),
+          drink_name: row.drink,
+        }));
       }
       return Response.json(row ? rowToDrink(row) : { error: "Drink not found" }, {
         status: row ? 200 : 404,
@@ -124,10 +193,11 @@ export default {
         body.steps || "", body.taste || "", storedServings
       ).run();
 
-      console.log("Drink created:", {
-        id: String(result.meta.last_row_id),
-        name: body.drink,
-      });
+      console.log(JSON.stringify({
+        event: "drink_created",
+        drink_id: String(result.meta.last_row_id),
+        drink_name: body.drink,
+      }));
 
       return new Response(JSON.stringify({ id: result.meta.last_row_id }), {
         status: 201,
@@ -172,7 +242,7 @@ export default {
         const fields = [
           ["date", "date", body.date],
           ["theme", "theme", body.theme || ""],
-          ["name", "drink", body.drink],
+          ["drink", "drink", body.drink],
           ["video_url", "video_url", body.url],
           ["photo_url", "photo_url", body.photo || ""],
           ["note", "note", body.note || ""],
@@ -187,11 +257,12 @@ export default {
             from: previous?.[column] ?? null,
             to: value ?? null,
           }]));
-        console.log("Drink updated:", {
-          id,
-          name: updated.drink,
+        console.log(JSON.stringify({
+          event: "drink_updated",
+          drink_id: id,
+          drink_name: updated.drink,
           changes,
-        });
+        }));
       }
 
       return new Response(JSON.stringify({ success: true }), {
@@ -241,7 +312,11 @@ export default {
       .bind(id)
       .run();
 
-    console.log("Drink deleted:", { id, name: drink.drink });
+    console.log(JSON.stringify({
+      event: "drink_deleted",
+      drink_id: id,
+      drink_name: drink.drink,
+    }));
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -250,12 +325,6 @@ export default {
 
     // POST /upload — laddar upp en fil (video eller bild) till R2, KRÄVER nyckel
   if (url.pathname === "/upload" && request.method === "POST") {
-      console.log("=== UPLOAD REQUEST RECEIVED ===", {
-        filename: url.searchParams.get("filename"),
-        date: url.searchParams.get("date"),
-        contentType: request.headers.get("Content-Type"),
-        contentLength: request.headers.get("Content-Length"),
-      });
     if (!isAuthorized(request)) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -303,20 +372,22 @@ export default {
       counter++;
     }
 
-    console.log("R2 upload started:", {filename, date, finalFilename,});
-
     // Ladda upp filen
     try {
       await env.MEDIA.put(finalFilename, request.body);
-      console.log("R2 upload successful:", finalFilename);
+      console.log(JSON.stringify({
+        event: "upload_succeeded",
+        upload_type: "file",
+        key: finalFilename,
+      }));
 
     } catch (err) {
-        console.error("R2 upload failed:", {
-          filename,
-          finalFilename,
-          date,
+        console.error(JSON.stringify({
+          event: "upload_failed",
+          upload_type: "file",
+          key: finalFilename,
           error: err instanceof Error ? err.message : String(err),
-        });
+        }));
 
       return new Response(
         JSON.stringify({
@@ -366,18 +437,14 @@ export default {
       const upload=await env.MEDIA.createMultipartUpload(key,{
         httpMetadata:{contentType:filename.toLowerCase().endsWith(".mov")?"video/quicktime":"video/mp4"}
       });
-      console.log("MULTIPART STARTED",{key,uploadId:upload.uploadId});
       return new Response(JSON.stringify({key,uploadId:upload.uploadId}),{status:201,headers:{"Content-Type":"application/json",...corsHeaders}});
     } catch(err) {
-        console.error("MULTIPART START FAILED", {
+        console.error(JSON.stringify({
+          event:"upload_failed",
+          upload_type:"multipart_start",
           error: String(err),
-          name: err instanceof Error ? err.name : undefined,
-          message: err instanceof Error ? err.message : undefined,
-          stack: err instanceof Error ? err.stack : undefined,
           key,
-          filename,
-          date,
-        });
+        }));
         return new Response(JSON.stringify({error:"Kunde inte starta videouppladdningen",details:String(err)}),{status:500,headers:{"Content-Type":"application/json",...corsHeaders}});
     }
   }
@@ -394,10 +461,15 @@ export default {
     try {
       const upload=env.MEDIA.resumeMultipartUpload(key,uploadId);
       const part=await upload.uploadPart(partNumber,request.body);
-      console.log("MULTIPART PART OK",{partNumber,etag:part.etag});
       return new Response(JSON.stringify(part),{headers:{"Content-Type":"application/json",...corsHeaders}});
     } catch(err) {
-      console.error("MULTIPART PART FAILED",{partNumber,error:String(err)});
+      console.error(JSON.stringify({
+        event:"upload_failed",
+        upload_type:"multipart_part",
+        key,
+        part_number:partNumber,
+        error:String(err),
+      }));
       return new Response(JSON.stringify({error:"Deluppladdning misslyckades",details:String(err)}),{status:500,headers:{"Content-Type":"application/json",...corsHeaders}});
     }
   }
@@ -413,18 +485,19 @@ export default {
       const {parts}=await request.json<{parts:R2UploadedPart[]}>();
       const upload=env.MEDIA.resumeMultipartUpload(key,uploadId);
       await upload.complete(parts);
-
-      const verified=await env.MEDIA.head(key);
-      console.log("!!! MULTIPART FILE VERIFIED !!!",{
-        key:verified?.key,
-        size:verified?.size,
-        etag:verified?.etag,
-        contentType:verified?.httpMetadata?.contentType
-      });
-
+      console.log(JSON.stringify({
+        event:"upload_succeeded",
+        upload_type:"multipart",
+        key,
+      }));
       return new Response(JSON.stringify({url:key}),{status:201,headers:{"Content-Type":"application/json",...corsHeaders}});
     } catch(err) {
-      console.error("MULTIPART COMPLETE FAILED",err);
+      console.error(JSON.stringify({
+        event:"upload_failed",
+        upload_type:"multipart_complete",
+        key,
+        error:String(err),
+      }));
       return new Response(JSON.stringify({error:"Kunde inte slutföra videon",details:String(err)}),{status:500,headers:{"Content-Type":"application/json",...corsHeaders}});
     }
   }
@@ -438,10 +511,14 @@ export default {
 
     try {
       await env.MEDIA.resumeMultipartUpload(key,uploadId).abort();
-      console.log("MULTIPART ABORTED",{key,uploadId});
       return new Response(null,{status:204,headers:corsHeaders});
     } catch(err) {
-      console.error("MULTIPART ABORT FAILED",err);
+      console.error(JSON.stringify({
+        event:"upload_failed",
+        upload_type:"multipart_abort",
+        key,
+        error:String(err),
+      }));
       return new Response(JSON.stringify({error:String(err)}),{status:500,headers:{"Content-Type":"application/json",...corsHeaders}});
     }
   }

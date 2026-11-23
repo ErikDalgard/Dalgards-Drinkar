@@ -499,26 +499,12 @@ function validateForm() {
 document.getElementById("f-video-file").addEventListener("change", (e) => {
   const file = e.target.files[0];
 
-  console.log("VIDEO FILE SELECTED:", {
-    exists: !!file,
-    name: file?.name,
-    size: file?.size,
-    type: file?.type,
-  });
-
   document.getElementById("f-video-filename").textContent =
     file?.name || "Ingen fil vald";
 });
 
 document.getElementById("f-photo-file").addEventListener("change", (e) => {
   const file = e.target.files[0];
-
-  console.log("PHOTO FILE SELECTED:", {
-    exists: !!file,
-    name: file?.name,
-    size: file?.size,
-    type: file?.type,
-  });
 
   document.getElementById("f-photo-filename").textContent =
     file?.name || "Ingen fil vald";
@@ -566,12 +552,6 @@ async function uploadFile(file,type,onProgress=()=>{},onStage=()=>{}) {
   const CHUNK_SIZE=10*1024*1024;
   const totalChunks=Math.ceil(file.size/CHUNK_SIZE);
 
-  console.log("=== MULTIPART VIDEO START ===",{
-    name:file.name,
-    sizeMB:(file.size/1024/1024).toFixed(2),
-    chunks:totalChunks
-  });
-
   let startRes;
   try {
     startRes=await fetch(`${API_BASE}/upload/start?filename=${encodeURIComponent(file.name)}&date=${encodeURIComponent(date)}`,{
@@ -595,7 +575,6 @@ async function uploadFile(file,type,onProgress=()=>{},onStage=()=>{}) {
       let lastError=null;
       for(let attempt=1;attempt<=3;attempt++) {
         try {
-          console.log("Uploading part",{partNumber,totalChunks,attempt});
           uploaded=await new Promise((resolve,reject)=>{
             const request=new XMLHttpRequest();
             request.open("PUT",`${API_BASE}/upload/part?key=${encodeURIComponent(key)}&uploadId=${encodeURIComponent(uploadId)}&partNumber=${partNumber}`);
@@ -648,13 +627,9 @@ async function uploadFile(file,type,onProgress=()=>{},onStage=()=>{}) {
 
     const data=await completeRes.json();
 
-    console.log("=== MULTIPART VIDEO COMPLETE ===",data);
-
     return data.url;
 
   } catch(err) {
-    console.error("=== MULTIPART VIDEO FAILED ===",err);
-
     try {
       await fetch(`${API_BASE}/upload/abort?key=${encodeURIComponent(key)}&uploadId=${encodeURIComponent(uploadId)}`,{
         method:"POST",
@@ -675,7 +650,6 @@ async function uploadFile(file,type,onProgress=()=>{},onStage=()=>{}) {
 document.getElementById("drink-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (isSaving) return;
-  console.log("=== FORM SUBMIT STARTED ===");
 
   const missing = validateForm();
 
@@ -724,16 +698,7 @@ document.getElementById("drink-form").addEventListener("submit", async (e) => {
       updateOverallStatus(`${label} ${fileProgress}%`,5+Math.round(ratio*80));
     };
 
-
-      console.log("VIDEO FILE SELECTED:", {
-        name: videoFile?.name,
-        size: videoFile?.size,
-        type: videoFile?.type
-      });
-
-
     if (videoFile) {
-      console.log("ABOUT TO CALL uploadFile() on video file.");
       updateOverallStatus("Laddar upp video...",5);
       videoUrl = await uploadFile(
         videoFile,
@@ -744,7 +709,6 @@ document.getElementById("drink-form").addEventListener("submit", async (e) => {
     }
 
     if (photoFile) {
-      console.log("ABOUT TO CALL uploadFile() on photo file.");
       updateOverallStatus(
         "Laddar upp bild...",
         totalUploadBytes?5+Math.round((uploadedBytes.Video/totalUploadBytes)*80):85

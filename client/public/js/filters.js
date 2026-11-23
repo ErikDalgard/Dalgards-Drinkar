@@ -3,7 +3,7 @@ import { formatDrinkDate, hashHue } from "./utils.js";
 import { SPIRITS, ingredientsContainSpirit } from "./spirits.js";
 import { TASTE_FILTERS, parseTasteProfile, matchesTasteFilters } from "./taste.js";
 import { isFavorite, subscribeFavorites } from "./favorites.js";
-export function createFilters(themes, onChange, videos = []) {
+export function createFilters(themes, onChange, videos = [], onAnalytics = null) {
     let selectedTheme = "";
     let favoritesOnly = false;
     const selectedSpirits = new Set();
@@ -96,6 +96,14 @@ export function createFilters(themes, onChange, videos = []) {
         });
         renderActiveFilters();
         onChange();
+        onAnalytics?.({
+            theme: selectedTheme,
+            favoritesOnly,
+            spirits: [...selectedSpirits],
+            tastes: [...selectedTastes],
+            search: document.getElementById("search").value,
+            resultCount: apply(videos).length,
+        });
     }
     function syncFavoriteControl() {
         favoritesToggle.checked = favoritesOnly;

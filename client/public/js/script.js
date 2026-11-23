@@ -16,6 +16,26 @@ let filterLinks;
 let drinkPage;
 let drinkNavigation;
 let searchSuggestions;
+let analyticsTimer = null;
+function reportArchiveFilters(state) {
+    clearTimeout(analyticsTimer);
+    analyticsTimer = setTimeout(() => {
+        fetch(`${API_BASE}/analytics/event`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                event: "archive_filters",
+                theme: state.theme,
+                favoritesOnly: state.favoritesOnly,
+                spirits: state.spirits,
+                tastes: state.tastes,
+                search: state.search,
+                resultCount: state.resultCount,
+            }),
+            keepalive: true,
+        }).catch(() => {});
+    }, 500);
+}
 async function init() {
     try {
         const [res] = await Promise.all([fetch(`${API_BASE}/drinks`), loadSpirits(API_BASE)]);
@@ -38,7 +58,7 @@ async function init() {
         animateCardsFrom = null;
         filterLinks?.update();
         render();
-    }, allVideos);
+    }, allVideos, reportArchiveFilters);
     drinkPage = createDrinkPage(
         (theme) => drinkNavigation.whenClosed(() => filters.filterByTheme(theme)),
         () => drinkNavigation.close(),
