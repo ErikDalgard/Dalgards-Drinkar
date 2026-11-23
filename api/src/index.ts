@@ -124,11 +124,32 @@ export default {
       }
 
       const payload = body as Record<string, unknown>;
-      if (payload.event !== "archive_filters" && payload.event !== "drink_favorite_changed") {
+      if (payload.event !== "archive_filters" &&
+          payload.event !== "drink_favorite_changed" &&
+          payload.event !== "page_view") {
         return Response.json({ error: "Okänd analytics-händelse" }, {
           status: 400,
           headers: corsHeaders,
         });
+      }
+
+      if (payload.event === "page_view") {
+        const page = typeof payload.page === "string"
+          ? payload.page.trim().slice(0, 40)
+          : "";
+        if (page !== "archive" && page !== "admin") {
+          return Response.json({ error: "Ogiltig sida" }, {
+            status: 400,
+            headers: corsHeaders,
+          });
+        }
+
+        console.log(JSON.stringify({
+          event: "page_view",
+          page,
+        }));
+
+        return Response.json({ success: true }, { headers: corsHeaders });
       }
 
       if (payload.event === "drink_favorite_changed") {

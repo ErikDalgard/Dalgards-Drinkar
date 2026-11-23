@@ -194,6 +194,23 @@ describe("media uploads", () => {
 });
 
 describe("archive analytics", () => {
+  it("accepts archive page view events", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "page_view",
+      page: "archive",
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true });
+  });
+
+  it("rejects unknown page view pages", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "page_view",
+      page: "unknown",
+    });
+    expect(response.status).toBe(400);
+  });
+
   it("accepts normalized filter events", async () => {
     const response = await request("/analytics/event", "POST", {
       event: "archive_filters",

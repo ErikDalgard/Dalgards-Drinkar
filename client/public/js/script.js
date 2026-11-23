@@ -17,6 +17,17 @@ let drinkPage;
 let drinkNavigation;
 let searchSuggestions;
 let analyticsTimer = null;
+function reportPageView() {
+    fetch(`${API_BASE}/analytics/event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            event: "page_view",
+            page: "archive",
+        }),
+        keepalive: true,
+    }).catch(() => {});
+}
 function reportArchiveFilters(state) {
     clearTimeout(analyticsTimer);
     analyticsTimer = setTimeout(() => {
@@ -37,6 +48,7 @@ function reportArchiveFilters(state) {
     }, 500);
 }
 async function init() {
+    reportPageView();
     try {
         const [res] = await Promise.all([fetch(`${API_BASE}/drinks`), loadSpirits(API_BASE)]);
         if (!res.ok)
