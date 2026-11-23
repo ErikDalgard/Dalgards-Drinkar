@@ -1,5 +1,10 @@
 const STORAGE_KEY = "dalgardsdrinkar:favorites:v1";
 const listeners = new Set();
+const ANALYTICS_API_BASE = typeof window === "undefined"
+    ? ""
+    : window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:8787"
+        : "https://dalgardsdrinkar-api.dalgard-erik.workers.dev";
 
 function readFavorites(value = null) {
     try {
@@ -33,12 +38,26 @@ export function getFavoriteIds() {
     return [...favoriteIds];
 }
 
-export function toggleFavorite(id) {
+export function toggleFavorite(id, drinkName = "") {
     const key = String(id);
-    if (favoriteIds.has(key)) favoriteIds.delete(key);
+    const removing = favoriteIds.has(key);
+    if (removing) favoriteIds.delete(key);
     else favoriteIds.add(key);
     persist();
     notify();
+    if (drinkName) {
+        fetch(`${ANALYTICS_API_BASE}/analytics/event`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                event: "drink_favorite_changed",
+                action: removing ? "removed" : "added",
+                drinkId: key,
+                drinkName,
+            }),
+            keepalive: true,
+        }).catch(() => {});
+    }
     return favoriteIds.has(key);
 }
 

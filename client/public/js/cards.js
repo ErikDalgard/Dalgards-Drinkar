@@ -40,7 +40,7 @@ export function makeCard(v, { onOpen, onThemeSelect }) {
     favoriteButton.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        const saved = toggleFavorite(v.id);
+        const saved = toggleFavorite(v.id, v.drink);
         showFavoriteToast(saved);
     });
     card.querySelector(".card-media").append(favoriteButton);

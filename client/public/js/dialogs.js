@@ -125,7 +125,7 @@ function createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, pageM
     if (favoriteButton) {
         favoriteButton.addEventListener("click", () => {
             if (currentDrink) {
-                const saved = toggleFavorite(currentDrink.id);
+                const saved = toggleFavorite(currentDrink.id, currentDrink.drink);
                 showFavoriteToast(saved, true);
             }
         });

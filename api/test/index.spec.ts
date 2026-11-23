@@ -179,6 +179,27 @@ describe("archive analytics", () => {
     expect(response.status).toBe(400);
   });
 
+  it("accepts drink favorite events", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "drink_favorite_changed",
+      action: "added",
+      drinkId: "577",
+      drinkName: "Testdrink",
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true });
+  });
+
+  it("rejects malformed favorite events", async () => {
+    const response = await request("/analytics/event", "POST", {
+      event: "drink_favorite_changed",
+      action: "unknown",
+      drinkId: "577",
+      drinkName: "Testdrink",
+    });
+    expect(response.status).toBe(400);
+  });
+
   it("rejects invalid JSON", async () => {
     const headers = new Headers({ "Content-Type": "application/json" });
     const response = await SELF.fetch("https://example.test/analytics/event", {

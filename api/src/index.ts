@@ -18,6 +18,26 @@ export default {
       return providedKey === env.ADMIN_KEY;
     }
 
+    function broadDevice(request: Request): string {
+      if (request.headers.get("Sec-CH-UA-Mobile") === "?1") return "mobile";
+      const platform = (request.headers.get("Sec-CH-UA-Platform") || "").toLowerCase();
+      const ua = (request.headers.get("User-Agent") || "").toLowerCase();
+      if (platform.includes("android") || platform.includes("ios") || /android|iphone|ipad|mobile/.test(ua)) {
+        return "mobile";
+      }
+      if (/tablet|ipad/.test(ua)) return "tablet";
+      return "desktop";
+    }
+
+    function browserName(request: Request): string {
+      const ua = request.headers.get("User-Agent") || "";
+      if (/edg\//i.test(ua)) return "Edge";
+      if (/chrome|chromium/i.test(ua) && !/edg\//i.test(ua)) return "Chrome";
+      if (/firefox/i.test(ua)) return "Firefox";
+      if (/safari/i.test(ua) && !/chrome|chromium/i.test(ua)) return "Safari";
+      return "Other";
+    }
+
     // GET /spirits — hämta spritsorter och sökord, publik
     if (url.pathname === "/spirits" && request.method === "GET") {
       const { results } = await env.DB.prepare(
@@ -104,11 +124,37 @@ export default {
       }
 
       const payload = body as Record<string, unknown>;
-      if (payload.event !== "archive_filters") {
+      if (payload.event !== "archive_filters" && payload.event !== "drink_favorite_changed") {
         return Response.json({ error: "Okänd analytics-händelse" }, {
           status: 400,
           headers: corsHeaders,
         });
+      }
+
+      if (payload.event === "drink_favorite_changed") {
+        const drinkId = typeof payload.drinkId === "string"
+          ? payload.drinkId.trim().slice(0, 30)
+          : typeof payload.drinkId === "number"
+            ? String(payload.drinkId).slice(0, 30)
+            : "";
+        const drinkName = typeof payload.drinkName === "string"
+          ? payload.drinkName.trim().slice(0, 100)
+          : "";
+        if (!drinkId || !drinkName || (payload.action !== "added" && payload.action !== "removed")) {
+          return Response.json({ error: "Ogiltig favorit-händelse" }, {
+            status: 400,
+            headers: corsHeaders,
+          });
+        }
+
+        console.log(JSON.stringify({
+          event: "drink_favorite_changed",
+          action: payload.action,
+          drink_id: drinkId,
+          drink_name: drinkName,
+        }));
+
+        return Response.json({ success: true }, { headers: corsHeaders });
       }
 
       const cleanArray = (value: unknown, maximum: number): string[] =>
@@ -155,10 +201,22 @@ export default {
       const row = await env.DB.prepare("SELECT * FROM drinks WHERE id=?")
         .bind(getMatch[1]).first();
       if (row) {
+        const cf = (request as Request & {
+          cf?: {
+            city?: string;
+            country?: string;
+            timezone?: string;
+          };
+        }).cf;
         console.log(JSON.stringify({
           event: "drink_viewed",
           drink_id: String(row.id),
           drink_name: row.drink,
+          city: cf?.city || null,
+          country: cf?.country || null,
+          device: broadDevice(request),
+          browser: browserName(request),
+          timezone: cf?.timezone || null,
         }));
       }
       return Response.json(row ? rowToDrink(row) : { error: "Drink not found" }, {
