@@ -122,6 +122,9 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
             label.textContent = names[i] || `Drink ${i + 1}`;
             group.appendChild(label);
         }
+        if (groupCount > 1 && tasteGroups[i]) {
+            appendTasteProfile(group, tasteGroups[i], true);
+        }
         const groupServings = Array.isArray(servings) ? servings[i] ?? servings[0] ?? 1 : servings;
         const groupTargetServings = Array.isArray(targetServings)
             ? targetServings[i] ?? groupServings
@@ -139,9 +142,6 @@ export function renderRecipeGroups(ingredientsRaw, stepsRaw, drinkNameRaw, taste
         }
         if (steps.length) {
             group.appendChild(makeRecipeSection("Gör så här", steps, true));
-        }
-        if (groupCount > 1 && tasteGroups[i]) {
-            appendTasteProfile(group, tasteGroups[i], true);
         }
         container.appendChild(group);
     }
