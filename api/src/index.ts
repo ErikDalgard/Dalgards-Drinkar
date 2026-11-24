@@ -106,6 +106,11 @@ export default {
 
     // POST /analytics/event — publik, endast normaliserade filter- och sökinformation loggas
     if (url.pathname === "/analytics/event" && request.method === "POST") {
+      const userAgent = request.headers.get("User-Agent") || "";
+      if (/GrafanaSyntheticMonitoring/i.test(userAgent)) {
+        return Response.json({ success: true, synthetic: true }, { headers: corsHeaders });
+      }
+
       let body: unknown;
       try {
         body = await request.json();

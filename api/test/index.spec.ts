@@ -202,7 +202,22 @@ describe("archive analytics", () => {
       page: "archive",
     });
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ success: true });
+  });
+
+  it("ignores Grafana Synthetic Monitoring events", async () => {
+    const response = await SELF.fetch("https://example.test/analytics/event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "GrafanaSyntheticMonitoring/1.0",
+      },
+      body: JSON.stringify({
+        event: "page_view",
+        page: "archive",
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ success: true, synthetic: true });
   });
 
   it("rejects unknown page view pages", async () => {
