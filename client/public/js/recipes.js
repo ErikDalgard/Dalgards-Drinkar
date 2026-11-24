@@ -72,9 +72,13 @@ export function renderTasteProfile(tasteStr) {
         }
         const row = document.createElement("div");
         row.className = "taste-row";
+        row.dataset.taste = label.toLowerCase();
         row.innerHTML = `
           <span class="taste-label">${label}</span>
-          <span class="taste-dots">${dots}</span>
+          <div class="taste-meter" role="meter" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="5" aria-label="${label}: ${value} av 5">
+            <span class="taste-dots">${dots}</span>
+            <span class="taste-value" aria-hidden="true">${value}<span class="taste-max">/5</span></span>
+          </div>
         `;
         rows.appendChild(row);
     });
@@ -164,9 +168,13 @@ function appendTasteProfile(container, tasteStr, grouped = false) {
         }
         const row = document.createElement("div");
         row.className = "taste-row";
+        row.dataset.taste = label.toLowerCase();
         row.innerHTML = `
           <span class="taste-label">${label}</span>
-          <span class="taste-dots">${dots}</span>
+          <div class="taste-meter" role="meter" aria-valuenow="${value}" aria-valuemin="0" aria-valuemax="5" aria-label="${label}: ${value} av 5">
+            <span class="taste-dots">${dots}</span>
+            <span class="taste-value" aria-hidden="true">${value}<span class="taste-max">/5</span></span>
+          </div>
         `;
         rows.appendChild(row);
     });
