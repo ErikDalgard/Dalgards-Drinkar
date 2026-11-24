@@ -324,6 +324,27 @@ html.drink-page-loading .drink-page-skeleton {
   color: var(--text);
 }
 
+body.drink-page-active #drink-page {
+  animation: drink-page-enter 180ms ease-out both;
+}
+
+@keyframes drink-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.drink-page-active #drink-page {
+    animation: none;
+  }
+}
+
 .detail-panel {
   padding: clamp(1.25rem, 4vw, 3.5rem);
   border: 1px solid var(--border);
