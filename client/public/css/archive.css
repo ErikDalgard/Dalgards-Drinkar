@@ -50,15 +50,16 @@ body.archive-page {
 .controls .search-wrapper {
   position: relative;
   min-width: 0;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid rgba(110, 68, 35, 0.3);
   border-radius: 14px;
   background: linear-gradient(145deg, #fffdf9 0%, var(--surface) 52%, var(--surface-hover) 100%);
-  box-shadow: 0 5px 18px rgba(58,42,28,.11), inset 0 1px rgba(255,255,255,.8);
+  box-shadow: 0 5px 18px rgba(58,42,28,.13), inset 0 1px rgba(255,255,255,.85);
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
 .controls .search-wrapper:hover {
-  border-color: var(--accent);
+  border-color: rgba(110, 68, 35, 0.5);
+  box-shadow: 0 6px 22px rgba(58,42,28,.17), inset 0 1px rgba(255,255,255,.85);
 }
 
 .controls .search-wrapper:focus-within {
