@@ -510,6 +510,7 @@ body.drink-page-active .site-footer {
 .drink-detail .share-drink:hover {
   background: rgba(255, 248, 239, 0.7);
   border-color: rgba(110, 68, 35, 0.35);
+  color: #22160d;
   transform: translateY(-1px);
 }
 
@@ -521,18 +522,19 @@ body.drink-page-active .site-footer {
 }
 
 .drink-detail .modal-favorite.is-favorite {
-  border-color: var(--leaf);
-  background: var(--leaf);
-  color: var(--surface);
+  border-color: var(--border);
+  background: rgba(255, 248, 239, 0.42);
+  color: #22160d;
 }
 
 .drink-detail .modal-favorite.is-favorite svg {
-  color: var(--surface);
+  color: var(--leaf);
 }
 
 .drink-detail .modal-favorite.is-favorite:hover {
-  background: color-mix(in srgb, var(--leaf) 85%, #000);
-  border-color: color-mix(in srgb, var(--leaf) 85%, #000);
+  background: rgba(255, 248, 239, 0.7);
+  border-color: var(--leaf);
+  transform: translateY(-1px);
 }
 
 .drink-detail .share-status {
