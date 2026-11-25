@@ -7,7 +7,7 @@
 <title>Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Archivo:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="public/css/styles.css">
+<link rel="stylesheet" href="public/css/styles.css?v=20261125-timeline-terminal-line">
 <link rel="icon" href="public/assets/icons/favicon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="public/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="public/assets/icons/site.webmanifest">
@@ -37,6 +37,7 @@
       <button type="button" class="admin-nav-button" data-admin-mode="add" aria-pressed="true" aria-controls="admin-drinks-view">Lägg till drink</button>
       <button type="button" class="admin-nav-button" data-admin-mode="edit" aria-pressed="false" aria-controls="admin-drinks-view">Redigera en drink</button>
       <button type="button" class="admin-nav-button" data-admin-mode="filters" aria-pressed="false" aria-controls="admin-filters-view">Redigera filter</button>
+      <button type="button" class="admin-nav-button" data-admin-mode="timeline" aria-pressed="false" aria-controls="admin-timeline-view">Tidslinje</button>
     </nav>
 
     <section id="admin-drinks-view" aria-label="Hantera drinkar">
@@ -166,6 +167,13 @@
       <button type="button" id="spirits-retry" class="filter-toggle" hidden>Försök igen</button>
     </section>
 
+    <section id="admin-timeline-view" class="admin-timeline" aria-labelledby="admin-timeline-title" hidden>
+      <p class="admin-timeline-intro" id="admin-timeline-intro">Sammanställer drinkarnas tidslinje…</p>
+      <div id="admin-timeline-content">
+        <p class="admin-timeline-empty">Tidslinjen laddas…</p>
+      </div>
+    </section>
+
     <div id="status-msg" class="upload-status">
       <div id="status-progress" class="status-progress" role="progressbar" aria-label="Uppladdning" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
         <span class="status-progress-fill"></span>
@@ -225,6 +233,6 @@
 
 <script src="public/js/config.js"></script>
 <script src="public/js/admin-recipe-fields.js"></script>
-<script type="module" src="public/js/admin.js?v=20261119"></script>
+<script type="module" src="public/js/admin.js?v=20261125-timeline-connections"></script>
 </body>
 </html>
