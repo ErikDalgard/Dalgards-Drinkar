@@ -38,28 +38,50 @@ textarea {
 
 /* Header and logo */
 
+.hero-wrapper {
+  position: relative;
+  color: var(--text-on-bg);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(28, 17, 10, 0.45) 0%,
+      rgba(28, 17, 10, 0.22) 52%,
+      rgba(28, 17, 10, 0.12) 100%
+    ),
+    url('../assets/bg.JPG');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
 header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 20;
   text-align: center;
-  background: rgba(200,154,103,0.72);
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 4px 16px rgba(58,42,28,0.12);
+  background: rgba(200, 154, 103, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(58, 42, 28, 0.12);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px) saturate(125%);
 }
 
 .brand-header {
-  padding: 1.15rem 1.5rem 0.75rem;
+  padding: 1.25rem 1.5rem 0.9rem;
 }
 
 header h1 {
   font-variant: small-caps;
   font-weight: 500;
   letter-spacing: 0.08em;
-  font-size: clamp(2.2rem,5vw,3.4rem);
-  margin: 0 0 0.4rem;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  margin: 0;
   color: var(--text-on-bg);
   cursor: pointer;
   transition: opacity 0.15s ease;
@@ -67,6 +89,7 @@ header h1 {
   flex-direction: column;
   align-items: center;
   gap: 0.15em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 }
 
 header h1:hover {
@@ -89,23 +112,44 @@ header h1:hover {
 .logo-sub {
   font-size: 0.7em;
   letter-spacing: 0.2em;
-  opacity: 0.85;
-}
-
-.intro-copy {
-  max-width: none;
-  margin: 0 auto;
-  padding: 0.35rem 0;
-  color: var(--text-on-bg);
-  font-size: 1.2rem;
-  font-weight: 500;
-  line-height: 1.55;
+  opacity: 0.9;
 }
 
 .intro-wrap {
   max-width: 1100px;
+  width: 100%;
+  flex: 1;
   margin: 0 auto;
-  padding: 0.9rem 1.5rem;
+  padding: 3rem 1.5rem 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-copy {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0;
+  color: var(--text-on-bg);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.55;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.2rem;
+  letter-spacing: -0.01em;
+  color: var(--text-on-bg);
+}
+
+.hero-title em {
+  font-style: italic;
+  font-weight: 500;
 }
 
 .intro-copy p {
@@ -118,36 +162,43 @@ header h1:hover {
 
 .intro-copy .intro-welcome {
   font: inherit;
-  color: inherit;
+  color: rgba(255, 248, 239, 0.92);
   letter-spacing: normal;
 }
 
 @media (max-width: 650px) {
+  .hero-wrapper {
+    background-position: 94% center;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(24, 15, 9, 0.22) 0%,
+        rgba(24, 15, 9, 0.28) 55%,
+        rgba(24, 15, 9, 0.48) 100%
+      ),
+    url('../assets/bg.JPG');
+  }
+
   .brand-header {
-    padding: 1rem 1rem 0.6rem;
+    padding: 1rem 1rem 0.7rem;
   }
 
   .intro-wrap {
     max-width: 100%;
-    padding: 1.2rem 1rem;
+    padding: 2rem 1.25rem 2.5rem;
   }
 
   .intro-copy {
-    max-width: 440px;
-    padding: 0;
-    font-size: 1.05rem;
+    max-width: 100%;
+    font-size: 1.15rem;
     line-height: 1.45;
   }
 
-  .intro-copy p {
-    margin-bottom: 0.3rem;
-  }
-
-  .intro-copy .intro-welcome {
-    font: inherit;
-    margin-bottom: 0.3rem;
+  .hero-title {
+    font-size: clamp(2.4rem, 11vw, 3.4rem);
   }
 }
+
 
 
 /* Shared date text */
