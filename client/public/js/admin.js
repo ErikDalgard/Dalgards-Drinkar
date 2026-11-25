@@ -4,6 +4,7 @@ import { createSpiritEditor } from "./admin-spirits.js";
 import { createAdminPreview } from "./admin-preview.js";
 import { createDrinkVariants } from "./admin-variants.js?v=20261119";
 import { createTasteFields } from "./admin-taste-fields.js";
+import { renderAdminTimeline } from "./admin-timeline.js?v=20261125-timeline-connections";
 
 // ============================================
 // Configuration & State
@@ -177,6 +178,7 @@ document.getElementById("home-link").addEventListener("click", ()=>{
 async function loadDrinks() {
   const res = await fetch(`${API_BASE}/drinks`);
   allDrinks = await res.json();
+  renderAdminTimeline(document.getElementById("admin-timeline-content"), allDrinks);
 }
 
 
@@ -190,11 +192,12 @@ function selectAdminMode(mode) {
   document.querySelectorAll("[data-admin-mode]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.dataset.adminMode === mode));
   });
-  document.getElementById("admin-drinks-view").hidden = mode === "filters";
+  document.getElementById("admin-drinks-view").hidden = mode === "filters" || mode === "timeline";
   document.getElementById("admin-filters-view").hidden = mode !== "filters";
+  document.getElementById("admin-timeline-view").hidden = mode !== "timeline";
 
   // Switching to filters and back keeps the current drink draft/search intact.
-  if (mode === "filters" || mode === drinkMode) return;
+  if (mode === "filters" || mode === "timeline" || mode === drinkMode) return;
   drinkMode = mode;
   const isEdit = mode === "edit";
   const form = document.getElementById("drink-form");
@@ -224,7 +227,7 @@ document.querySelectorAll("[data-admin-mode]").forEach((button) => {
   button.addEventListener("click", () => {
     if (isSaving) return;
     const mode = button.dataset.adminMode;
-    if (mode !== "filters" && mode !== drinkMode && !unsavedChanges.confirmDiscard(drinkForm)) return;
+    if (mode !== "filters" && mode !== "timeline" && mode !== drinkMode && !unsavedChanges.confirmDiscard(drinkForm)) return;
     selectAdminMode(mode);
   });
 });
