@@ -1801,23 +1801,29 @@ html.drink-page-loading body .site-footer {
 }
 
 .load-error {
-  flex: 1;
-  display: grid;
-  place-items: center;
+  display: flex;
   padding: 3rem 1.5rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  color: var(--text);
+  text-align: center;
 }
 
 .load-error-content {
   max-width: 620px;
   width: 100%;
-  padding: clamp(1.5rem,5vw,3rem);
-  border: 1px solid var(--border);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid rgba(58, 42, 28, 0.15);
   border-radius: 16px;
-  background: var(--surface);
+  background: rgba(252, 248, 242, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--text);
   text-align: center;
-  box-shadow: 0 8px 30px rgba(58,42,28,0.08);
+  box-shadow: 0 12px 36px rgba(58, 42, 28, 0.12);
 }
+
 
 .load-error-glass {
   width: 60px;
