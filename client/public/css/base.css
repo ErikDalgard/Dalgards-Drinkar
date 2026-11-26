@@ -87,7 +87,7 @@ header::after{
   content: "";
   flex: 1;
   height: 30px; /* Controls how thin the full-width bar is */
-  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
   backdrop-filter: blur(10px) saturate(125%);
 }
