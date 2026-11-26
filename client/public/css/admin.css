@@ -127,7 +127,7 @@
 
 .admin-wrap {
   max-width: min(450px,90%);
-  margin: 2.5rem auto 4rem;
+  margin: 9rem auto 4rem;
   padding: 2rem 2.5rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -196,7 +196,7 @@
 .file-button {
   font-weight: 600;
   font-size: 0.85rem;
-  background: #c89a67;
+  background: var(--bg);
   border: 1px solid var(--border);
   color: white;
   border-radius: 6px;

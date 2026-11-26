@@ -40,6 +40,12 @@ test('clears the search query with the search field button', async ({ page }) =>
   await expect(page.locator('#grid .card')).toHaveCount(24);
   await expect(page.locator('#count')).toHaveText('Visar 27 av 27 drinkar');
 });
+test('search button scrolls to the drink list', async ({ page }) => {
+  await page.getByRole('combobox', { name: 'Sök efter en drink' }).fill('gin');
+  await page.getByRole('button', { name: 'Sök drinkar' }).click();
+  await expect(page.locator('#search-suggestions')).toBeHidden();
+  await expect(page.locator('#grid')).toBeInViewport({ ratio: 0.1 });
+});
 test('selects the correct duplicate name by date and opens its recipe and URL', async ({ page }) => {
   await page.getByRole('combobox', { name: 'Sök efter en drink' }).fill('dry martini');
   const options = page.getByRole('listbox', { name: 'Drinkförslag' }).getByRole('option');
