@@ -2,6 +2,7 @@ import { formatDrinkDate } from "./utils.js";
 
 export function createSearchSuggestions(onSelect) {
     const input = document.getElementById("search");
+    const form = document.getElementById("search-form");
     const popup = document.getElementById("search-suggestions");
     const list = document.getElementById("search-suggestion-list");
     const summary = document.getElementById("search-suggestions-summary");
@@ -25,6 +26,14 @@ export function createSearchSuggestions(onSelect) {
         active = -1;
         dismissed = true;
     }
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        close();
+        document.getElementById("grid").scrollIntoView({
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            block: "start",
+        });
+    });
     function choose(index) {
         const drink = matches[index];
         if (!drink) return;

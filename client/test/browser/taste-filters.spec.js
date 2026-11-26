@@ -50,7 +50,12 @@ test('taste filters follow the favorite and spirit controls, exclude missing pro
   await expect(page.locator('#grid .card')).toHaveCount(0);
   await page.locator('#spirit-picker-toggle').click();
   const applyFilters = page.getByRole('button', { name: 'Visa resultat', exact: true });
-  if (await applyFilters.isVisible()) await applyFilters.click();
+  if (await applyFilters.isVisible()) {
+    await applyFilters.click();
+  } else {
+    await page.locator('#filter-toggle').click();
+  }
+  await expect(page.locator('#filter-panel')).not.toHaveClass(/open/);
   await page.getByRole('button', { name: 'Ta bort filter: Stark', exact: true }).click();
   await expect(page.locator('#grid .card')).toHaveCount(1);
   await expect(page.locator('#grid')).toContainText('Syrlig vodka');

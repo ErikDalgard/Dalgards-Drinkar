@@ -3,7 +3,7 @@
 /* Theme and document defaults */
 
 :root {
-  --bg: #c89a67;
+  --bg: #754323;
   --surface: #fff8ef;
   --surface-hover: #fdefdc;
   --border: #e6cea3;
@@ -13,6 +13,9 @@
   --accent: #6e4423;
   --leaf: #6b7654;
   --text-on-bg-muted: #f5f5f5;
+  --card-bg: color-mix(in srgb, var(--bg) 78%, var(--surface) 22%);
+  --glass-bg: rgba(42,30,20,.94);
+  --brand-gradient: linear-gradient(145deg, #9a663f 0%, var(--bg) 50%, #4a2d1d 100%);
 }
 
 * {
@@ -38,28 +41,67 @@ textarea {
 
 /* Header and logo */
 
-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  text-align: center;
-  background: rgba(200,154,103,0.72);
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 4px 16px rgba(58,42,28,0.12);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px) saturate(125%);
+.hero-wrapper {
+  position: relative;
+  color: var(--text-on-bg);
+  min-height: 78svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(28, 17, 10, 0.45) 0%,
+      rgba(28, 17, 10, 0.22) 52%,
+      rgba(28, 17, 10, 0.12) 100%
+    ),
+    url('../assets/bg.JPG');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  justify-content: center;
+  align-items: center;
 }
 
+header {
+  position: fixed;
+  top: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  /* Remove the outer full-height bar so there is no double layer */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+
+
 .brand-header {
-  padding: 1.15rem 1.5rem 0.75rem;
+  flex-shrink: 0;
+  pointer-events: auto;
+  padding: 0.65rem clamp(1.75rem, 5vw, 4rem);
+  max-width: calc(100vw - 2rem);
+  border-radius: 6px;
+  background: var(--brand-gradient);
+  box-shadow: 0 6px 22px rgba(58, 42, 28, 0.24);
 }
 
 header h1 {
   font-variant: small-caps;
   font-weight: 500;
   letter-spacing: 0.08em;
-  font-size: clamp(2.2rem,5vw,3.4rem);
-  margin: 0 0 0.4rem;
+  font-size: clamp(1.5rem, 3.2vw, 2.45rem);
+  margin: 0;
   color: var(--text-on-bg);
   cursor: pointer;
   transition: opacity 0.15s ease;
@@ -67,6 +109,7 @@ header h1 {
   flex-direction: column;
   align-items: center;
   gap: 0.15em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
 }
 
 header h1:hover {
@@ -76,8 +119,9 @@ header h1:hover {
 .logo-line {
   display: inline-flex;
   align-items: center;
-  gap: 0.15em;
+  gap: 0.22em;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .logo-glass {
@@ -89,23 +133,46 @@ header h1:hover {
 .logo-sub {
   font-size: 0.7em;
   letter-spacing: 0.2em;
-  opacity: 0.85;
-}
-
-.intro-copy {
-  max-width: none;
-  margin: 0 auto;
-  padding: 0.35rem 0;
-  color: var(--text-on-bg);
-  font-size: 1.2rem;
-  font-weight: 500;
-  line-height: 1.55;
+  opacity: 0.9;
 }
 
 .intro-wrap {
-  max-width: 1100px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Trycker isär texten upptill och sök/knapp nertill */
+  align-items: center;
+  gap: 2rem; /* Minsta tillåtna mellanrum på väldigt låga skärmar */
+  width: 100%;
+  grid-template-columns: none;
+  padding: clamp(8rem, 19vh, 13rem) 1.5rem 1.5rem;
+}
+
+
+.intro-copy {
+  max-width: 700px;
   margin: 0 auto;
-  padding: 0.9rem 1.5rem;
+  padding: 0;
+  color: var(--text-on-bg);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.55;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.2rem;
+  letter-spacing: -0.01em;
+  color: var(--text-on-bg);
+}
+
+.hero-title em {
+  font-style: italic;
+  font-weight: 500;
 }
 
 .intro-copy p {
@@ -118,36 +185,157 @@ header h1:hover {
 
 .intro-copy .intro-welcome {
   font: inherit;
-  color: inherit;
+  color: rgba(255, 248, 239, 0.92);
   letter-spacing: normal;
 }
 
 @media (max-width: 650px) {
+  .hero-wrapper {
+    background-position: 94% center;
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(24, 15, 9, 0.22) 0%,
+        rgba(24, 15, 9, 0.28) 55%,
+        rgba(24, 15, 9, 0.48) 100%
+      ),
+    url('../assets/bg.JPG');
+  }
+
   .brand-header {
-    padding: 1rem 1rem 0.6rem;
+    padding: 1rem 1rem 0.7rem;
+    background: var(--brand-gradient);
+
   }
 
   .intro-wrap {
     max-width: 100%;
-    padding: 1.2rem 1rem;
+    padding: clamp(7rem, 20vh, 10rem) 1.25rem 1.5rem;
+
   }
 
   .intro-copy {
-    max-width: 440px;
-    padding: 0;
-    font-size: 1.05rem;
+    max-width: 100%;
+    font-size: 1.15rem;
     line-height: 1.45;
   }
 
-  .intro-copy p {
-    margin-bottom: 0.3rem;
-  }
-
-  .intro-copy .intro-welcome {
-    font: inherit;
-    margin-bottom: 0.3rem;
+  .hero-title {
+    font-size: clamp(2.4rem, 11vw, 3.4rem);
   }
 }
+
+.hero-actions {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 760px;
+}
+
+/* Transparent sökfält */
+.hero-actions .search-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+
+.hero-actions .search-icon {
+  position: static;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.hero-actions #search {
+  width: 100%;
+  min-width: 0;
+  padding: 1rem 3.5rem 1rem 3.25rem;
+  font-size: 1.05rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  outline: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-actions #search::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hero-actions #search:focus {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.hero-actions .search-clear {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+.hero-actions .search-submit {
+  position: absolute;
+  top: 50%;
+  left: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-on-bg);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease;
+}
+
+.hero-actions .search-submit:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.hero-actions .search-submit:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: -2px;
+}
+
+/* Se till att förslagslistan lägger sig snyggt ovanpå innehållet under */
+.hero-actions .search-suggestions {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .intro-wrap {
+    max-width: 100%;
+    padding: clamp(8rem, 19vh, 13rem) 1.25rem 8.5rem;
+  }
+
+  .hero-actions .search-wrapper {
+    flex: 1; /* Sökfältet fyller ut bredden bredvid knappen */
+  }
+
+  .hero-actions .controls {
+    flex: 0 0 auto;
+  }
+}
+
 
 
 /* Shared date text */
@@ -398,6 +586,7 @@ header h1:hover {
   height: 18px;
   color: var(--text-muted);
   pointer-events: none;
+  z-index: 2;
 }
 
 .search-suggestion {

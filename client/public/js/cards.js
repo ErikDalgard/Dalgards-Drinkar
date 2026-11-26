@@ -47,7 +47,8 @@ export function makeCard(v, { onOpen, onThemeSelect }) {
     card.querySelector(".card-open").addEventListener("click", () => onOpen(v));
     const themeButton = card.querySelector(".card-theme");
     if (themeButton) {
-        themeButton.style.setProperty("--theme-hue", themeHue(v.theme));
+        const hue = themeHue(v.theme);
+        card.style.setProperty("--theme-hue", hue);
         themeButton.addEventListener("click", () => onThemeSelect(v.theme));
     }
     return card;
