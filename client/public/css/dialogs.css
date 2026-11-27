@@ -1375,7 +1375,7 @@ body.drink-page-active .site-footer {
 
 .drink-detail .modal-favorite:hover,
 .drink-detail .share-drink:hover {
-  background: var(--glass-bg);
+  background: var(--card-detail-bg);
   border-color: rgba(255,248,239,.28);
   color: var(--surface);
   transform: translateY(-1px);
