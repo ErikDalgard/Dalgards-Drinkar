@@ -68,8 +68,8 @@ textarea {
 }
 
 header {
-  position: fixed;
-  top: 1rem;
+  position: sticky;
+  top: 0.75rem;
   left: 0;
   right: 0;
   z-index: 20;
