@@ -65,6 +65,8 @@ textarea {
   background-repeat: no-repeat;
   justify-content: center;
   align-items: center;
+  margin-top: -5rem;
+  padding-top:5rem;
 }
 
 header {
