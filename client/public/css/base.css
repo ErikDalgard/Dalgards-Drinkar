@@ -33,6 +33,77 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 50px;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Primary button (matches your "Visa filter" / saved leaf-green style) */
+.btn-primary {
+  background: var(--leaf);
+  border-color: var(--leaf);
+  color: var(--surface);
+}
+
+.btn-primary:hover:not(:disabled) {
+  border-color: rgba(255, 248, 239, 0.45);
+  filter: brightness(1.1);
+}
+
+/* Secondary / subtle glass button (for Share, unsaved Favorite, Clear, etc.) */
+.btn-secondary {
+  background: var(--card-detail-bg);
+  border-color: var(--card-detail-border);
+  color: var(--surface);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--card-detail-bg);
+  border-color: rgba(255, 248, 239, 0.28);
+}
+
+.btn-static:hover:not(:disabled) {
+  transform: none;
+}
+
 button,
 input,
 select,
@@ -399,25 +470,7 @@ header h1:hover {
 }
 
 
-/* Shared form controls */
 
-.filter-toggle {
-  font-size: 0.95rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 0.65rem 1.1rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s ease,border-color 0.15s ease,color 0.15s ease;
-}
-
-.filter-toggle:hover {
-  background: var(--surface-hover);
-  border-color: var(--accent);
-  color: var(--accent);
-}
 
 .filter-group {
   display: flex;

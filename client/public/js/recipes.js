@@ -252,7 +252,7 @@ export function renderSpiritLinks(ingredients, onSpiritSelect) {
     spirits.forEach((spirit) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "recipe-spirit-button";
+        button.className = "btn btn-secondary recipe-spirit-button";
         button.textContent = spirit;
         button.style.setProperty("--spirit-hue", hashHue(spirit));
         button.setAttribute("aria-label", `Visa alla drinkar med ${spirit}`);
