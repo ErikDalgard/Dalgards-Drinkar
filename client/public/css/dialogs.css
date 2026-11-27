@@ -684,7 +684,6 @@ body.drink-page-active .site-footer {
   padding: .85rem 1rem;
   border: 1px solid rgba(255,248,239,.28);
   border-radius: 8px;
-  background: var(--glass-bg);
 }
 
 .drink-detail .recipe-subsection + .recipe-subsection {
@@ -693,7 +692,6 @@ body.drink-page-active .site-footer {
 
 .drink-detail .recipe-method .recipe-subsection {
   border-color: rgba(255,248,239,.28);
-  background: var(--glass-bg);
 }
 
 .drink-detail .recipe-subheading {
