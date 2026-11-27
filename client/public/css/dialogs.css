@@ -319,9 +319,32 @@ html.drink-page-loading .drink-page-skeleton {
   width: 100%;
   min-width: 0;
   max-width: 1440px;
-  margin: 6.5rem auto 2rem;
+  margin: 2.5rem auto 2rem;
   padding: 0 clamp(1.25rem, 4vw, 3.5rem);
   color: var(--text);
+}
+
+body.drink-page-active::before,
+html.drink-page-loading body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(28, 17, 10, 0.55) 0%,
+      rgba(28, 17, 10, 0.35) 52%,
+      rgba(28, 17, 10, 0.25) 100%
+    ),
+    url('../assets/bg_drink.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform: scale(1.06);
+    filter: blur(5px);
+
 }
 
 body.drink-page-active #drink-page {
@@ -718,13 +741,23 @@ body.drink-page-active .site-footer {
 }
 
 @media (max-width:700px) {
-  body.drink-page-active {
+  body.drink-page-active,
+  html.drink-page-loading body {
     background: linear-gradient(155deg, #291304 0%, #3c1f08 52%, #4a270c 100%);
   }
 
+  body.drink-page-active::before,
+  html.drink-page-loading body::before {
+    display: none;
+  }
+
+  button#modal-close{
+    margin-top: 1.5rem;
+  }
+
   .drink-detail {
-    margin: 0;
-    padding: 6.5rem 0 0;
+    margin-top: -5rem;
+    padding: 5.5rem 0 0;
     background: linear-gradient(155deg, #291304 0%, #3c1f08 52%, #4a270c 100%);
   }
 
