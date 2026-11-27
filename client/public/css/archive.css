@@ -546,7 +546,7 @@ body.archive-page .search-suggestion[aria-selected="true"] {
 .favorite-toast {
   position: fixed;
   z-index: 1000;
-  top: max(1.25rem, env(safe-area-inset-top, 0px));
+  top: max(6.25rem, env(safe-area-inset-top, 0px));
   left: 50%;
   max-width: calc(100vw - 2rem);
   padding: .7rem 1rem;
@@ -583,6 +583,19 @@ body.archive-page .search-suggestion[aria-selected="true"] {
     transition: none;
   }
 }
+
+@media (max-width: 767px) {
+  .favorite-toast {
+    top: auto;
+    bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem));
+    transform: translate(-50%, 0.75rem);
+  }
+
+  .favorite-toast.is-visible {
+    transform: translate(-50%, 0);
+  }
+}
+
 
 .card-body {
   grid-area: 1 / 1;

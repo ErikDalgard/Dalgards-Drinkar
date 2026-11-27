@@ -1,14 +1,16 @@
 const favoriteToastTimers = new Map();
 
-export function hideFavoriteToast(inDialog = false) {
-    const toast = document.getElementById(inDialog ? "dialog-favorite-toast" : "favorite-toast");
+export function hideFavoriteToast() {
+    const toast = document.getElementById("favorite-toast");
+    if (!toast) return;
     toast.classList.remove("is-visible");
     window.clearTimeout(favoriteToastTimers.get(toast));
     favoriteToastTimers.delete(toast);
 }
 
-function showToast(message, inDialog = false, state = "") {
-    const toast = document.getElementById(inDialog ? "dialog-favorite-toast" : "favorite-toast");
+function showToast(message, _inDialog = false, state = "") {
+    const toast = document.getElementById("favorite-toast");
+    if (!toast) return;
     toast.textContent = message;
     toast.classList.toggle("is-saved", state === "saved");
     toast.classList.toggle("is-removed", state === "removed");
@@ -27,3 +29,4 @@ export function showFavoriteToast(saved, inDialog = false) {
         saved ? "saved" : "removed",
     );
 }
+
