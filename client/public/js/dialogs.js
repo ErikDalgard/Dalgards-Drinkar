@@ -115,6 +115,8 @@ function createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, pageM
         if (!currentDrink || !favoriteButton) return;
         const active = isFavorite(currentDrink.id);
         favoriteButton.classList.toggle("is-favorite", active);
+        favoriteButton.classList.toggle("btn-primary", active);
+        favoriteButton.classList.toggle("btn-secondary", !active);
         favoriteButton.setAttribute("aria-pressed", String(active));
         favoriteButton.setAttribute("aria-label", active
             ? `Ta bort ${currentDrink.drink} från favoriter`
@@ -131,6 +133,7 @@ function createDrinkView(onThemeSelect, onClose, onSpiritSelect, mediaUrl, pageM
         });
         subscribeFavorites(syncFavoriteButton);
     }
+
     function openModal(v) {
         if (favoriteButton) hideFavoriteToast(true);
         currentDrink = v;

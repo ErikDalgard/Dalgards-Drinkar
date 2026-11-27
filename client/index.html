@@ -71,7 +71,7 @@
         <div id="search-suggestion-list" class="search-suggestion-list" role="listbox" aria-label="Drinkförslag"></div>
       </div>
       <div class="controls">
-        <button id="filter-toggle" class="filter-toggle" type="button" aria-expanded="false" aria-controls="filter-panel">
+        <button id="filter-toggle" class="btn btn-primary" type="button" aria-expanded="false" aria-controls="filter-panel">
           <svg class="filter-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
           </svg>
@@ -258,7 +258,7 @@
 </main>
 
 <main class="drink-detail" id="drink-page" aria-labelledby="modal-drink" hidden>
-  <button type="button" class="detail-back" id="modal-close" aria-label="Tillbaka">
+  <button type="button" class="btn btn-primary detail-back" id="modal-close" aria-label="Tillbaka">
     Tillbaka
   </button>
   <div class="detail-panel">
@@ -272,11 +272,11 @@
             <span class="date" id="modal-date"></span>
           </div>
           <div class="drink-share">
-            <button type="button" id="modal-favorite" class="modal-favorite" aria-pressed="false">
+            <button type="button" id="modal-favorite" class="btn btn-secondary modal-favorite" aria-pressed="false">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
               <span>Spara som favorit</span>
             </button>
-            <button type="button" id="share-drink" class="share-drink">
+            <button type="button" id="share-drink" class="btn btn-secondary share-drink">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></svg>
               <span>Dela</span>
             </button>
@@ -313,7 +313,7 @@
         src="public/assets/glass.png"
         alt="Dalgards Drinkars glas"
       >
-      <a href="admin.html" class="footer-admin-link">Admin</a>
+    <a href="admin.html" class="footer-admin-link btn btn-secondary">Admin</a>
     </div>
   </div>
 </footer>

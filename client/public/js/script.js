@@ -133,7 +133,7 @@ function renderLoadMore(totalBatches) {
     if (visibleBatches >= totalBatches)
         return;
     const loadMore = document.createElement("button");
-    loadMore.className = "load-more";
+    loadMore.className = "btn btn-primary load-more";
     loadMore.textContent = `Visa fler drinkar`;
     loadMore.addEventListener("click", () => {
         const previousCount = document.querySelectorAll("#grid .card").length;

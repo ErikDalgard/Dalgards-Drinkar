@@ -143,13 +143,7 @@
   margin-bottom: 1.2rem;
 }
 
-#key-save {
-  background-color: var(--leaf);
-  border-color: var(--leaf);
-  border-radius: 999px;
-  color: var(--surface);
-  font-size: 1rem;
-  }
+
 
 #key-section {
   margin: 0 auto;
