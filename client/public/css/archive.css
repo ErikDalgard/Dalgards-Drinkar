@@ -1541,8 +1541,11 @@ body.archive-page .search-suggestion[aria-selected="true"] {
 }
 
 .pagination .load-more:hover:not(:disabled) {
-  border-color: #5b6547;
-  background: #5b6547;
+    transform: translateY(-1px);
+    border-color: #5b6547;
+    background: #5b6547;
+    color: #fff;
+    box-shadow: 0 7px 20px rgba(58,42,28,.14);
 }
 
 .pagination .load-more:focus-visible {
@@ -1853,16 +1856,15 @@ html.drink-page-loading body .site-footer {
   max-width: 620px;
   width: 100%;
   padding: clamp(1.5rem, 5vw, 3rem);
-  border: 1px solid rgba(58, 42, 28, 0.15);
+  border: var(--card-detail-border);
   border-radius: 16px;
-  background: rgba(252, 248, 242, 0.78);
+  background: var(--card-detail-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--text);
   text-align: center;
   box-shadow: 0 12px 36px rgba(58, 42, 28, 0.12);
 }
-
 
 .load-error-glass {
   width: 60px;
@@ -1875,20 +1877,21 @@ html.drink-page-loading body .site-footer {
   margin: 0 0 1rem;
   font-size: clamp(2rem,5vw,3rem);
   line-height: 1.15;
+  color: var(--text-on-bg);
 }
 
 .load-error p {
   font-size: 1.25rem;
+  color: var(--text-on-bg);
   line-height: 1.5;
 }
-
 #load-retry {
   min-height: 48px;
   margin: 0.5rem 0;
   padding: 0.65rem 1.5rem;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--leaf);
   border-radius: 8px;
-  background: var(--accent);
+  background: var(--leaf);
   color: var(--surface);
   font: inherit;
   font-size: 1.2rem;
@@ -1896,17 +1899,20 @@ html.drink-page-loading body .site-footer {
 }
 
 #load-retry:hover {
-  background: var(--text);
-}
+     transform: translateY(-1px);
+    border-color: #5b6547;
+    background: #5b6547;
+    color: #fff;
+    box-shadow: 0 7px 20px rgba(58,42,28,.14);}
 
 .load-error .load-error-contact {
   margin-bottom: 0;
   font-size: 1.0625rem;
-  color: var(--text-muted);
+  color: var(--text-on-bg);
 }
 
 .load-error a {
-  color: var(--accent);
+  color: var(--text-on-bg);
   text-underline-offset: 3px;
 }
 
