@@ -262,7 +262,7 @@ html.drink-page-loading .drink-page-skeleton {
 }
 
 .drink-page-skeleton .detail-skeleton-media {
-  background-color: var(--surface);
+  background-color: rgb(88 62 23 / 78%);
 }
 
 .detail-skeleton-recipes {
@@ -580,20 +580,20 @@ body.drink-page-active .site-footer {
   min-width: 0;
   margin: 0 0 1rem;
   padding: 1.1rem 1.2rem;
-  border: 1px solid rgba(255,248,239,.28);
+  border: 1px solid var(--card-detail-border);
   border-radius: 14px;
-  background-color: var(--glass-bg);
+  background-color: var(--card-detail-bg);
 }
 
 .drink-detail .recipe-shopping {
-  background-color: var(--glass-bg);
+  background-color: var(--card-detail-bg);
   background-image: none;
 }
 
 .drink-detail .recipe-method {
-  background-color: var(--glass-bg);
+  background-color: var(--card-detail-bg);
   background-image: none;
-  border-color: rgba(255,248,239,.28);
+  border-color: var(--card-detail-border);
 }
 
 .drink-detail .recipe-section .recipe-heading {
@@ -674,7 +674,7 @@ body.drink-page-active .site-footer {
 }
 
 .drink-detail .recipe-portions-button:disabled {
-  background: var(--glass-bg);
+  background: var(--card-detail-bg);
   color: rgba(255, 248, 239, 0.5);
   opacity: 1;
   cursor: not-allowed;
@@ -1014,9 +1014,9 @@ body.drink-page-active .site-footer {
 .modal .recipe-section {
   margin-bottom: 1rem;
   padding: 1.1rem 1.2rem;
-  border: 1px solid rgba(255,248,239,.28);
+  border: 1px solid var(--card-detail-border);
   border-radius: 12px;
-  background-color: var(--glass-bg);
+  background-color: var(--card-detail-bg);
 }
 
 .modal .recipe-shopping {
@@ -1204,7 +1204,7 @@ body.drink-page-active .site-footer {
 #drink-page button:hover,
 #drink-page button:disabled {
   border: 1px solid rgba(255,248,239,.28);
-  background: var(--glass-bg);
+  background: var(--leaf);
   color: var(--surface);
 }
 
