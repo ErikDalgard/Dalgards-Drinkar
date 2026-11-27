@@ -1683,7 +1683,7 @@ body.archive-page .search-suggestion[aria-selected="true"] {
   padding: 0.4rem 0.8rem;
   border: 1px solid rgba(255,248,239,.28);
   border-radius: 20px;
-  background: var(--glass-bg);
+  background: var(--text-muted);
   color: var(--surface);
   font: inherit;
   font-size: 1rem;
@@ -1732,9 +1732,9 @@ body.archive-page .search-suggestion[aria-selected="true"] {
   justify-content: center;
   gap: 0.5rem;
   min-height: 44px;
-  padding: 0.5rem 0.9rem;
-  border: 1px solid var(--leaf);
-  border-radius: 20px;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--leaf);
+  border-radius: 14px;
   background: var(--leaf);
   color: var(--surface);
   font: inherit;
